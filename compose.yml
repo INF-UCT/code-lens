@@ -1,0 +1,69 @@
+services:
+  code-lens-server:
+    container_name: code-lens-server
+    build:
+      context: .
+      dockerfile: ./apps/server/Dockerfile
+      target: dev
+    env_file:
+      - .env
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    privileged: false
+    depends_on:
+      code-lens-postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - code-lens-network
+    volumes:
+      - ./apps/server:/app/apps/server
+      - cargo_cache:/usr/local/cargo/registry
+      - ./.config:/app/.config
+      - server_target:/app/target
+
+  code-lens-nginx:
+    container_name: code-lens-nginx
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./.config/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - code-lens-server
+    networks:
+      - code-lens-network
+
+  code-lens-postgres:
+    image: postgres:15
+    container_name: code-lens-postgres
+    command: postgres -c log_statement=none -c log_duration=off -c log_min_duration_statement=-1
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+    networks:
+      - code-lens-network
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB_NAME}'" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  code-lens-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  server_target:
+  cargo_cache:
