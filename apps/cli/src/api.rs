@@ -1,10 +1,22 @@
 use serde::{Deserialize, Serialize};
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "PascalCase")]
+pub enum DurationMonths {
+    One,
+    Six,
+    Twelve,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
-pub struct TokenResponse {
-    pub success: bool,
-    pub message: String,
-    pub token: Option<String>,
+pub struct RegisterTokenRequest {
+    pub repository_url: String,
+    pub expiration_months: DurationMonths,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TokenData {
+    pub data: String,
 }
 
 pub struct ApiClient {
@@ -15,7 +27,7 @@ pub struct ApiClient {
 impl ApiClient {
     pub fn new() -> Self {
         let base_url = std::env::var("CODELENS_SERVER_URL")
-            .expect("CODELENS_SERVER_URL environment variable must be set");
+            .unwrap_or_else(|_| "http://localhost:3000".to_string());
 
         Self {
             base_url,
@@ -25,35 +37,44 @@ impl ApiClient {
 
     pub async fn register_token(
         &self,
-        token: &str,
-    ) -> Result<TokenResponse, Box<dyn std::error::Error>> {
-        let url = format!("{}/auth/register-token", self.base_url);
+        repository_url: &str,
+        expiration_months: DurationMonths,
+    ) -> Result<String, Box<dyn std::error::Error>> {
+        let url = format!("{}/token/register", self.base_url);
 
-        let response = self
-            .client
-            .post(&url)
-            .header("Authorization", format!("Bearer {}", token))
-            .send()
-            .await?;
+        let request = RegisterTokenRequest {
+            repository_url: repository_url.to_string(),
+            expiration_months,
+        };
 
-        let body = response.json::<TokenResponse>().await?;
-        Ok(body)
+        let response = self.client.post(&url).json(&request).send().await?;
+
+        if response.status().is_success() {
+            let body = response.json::<TokenData>().await?;
+            Ok(body.data)
+        } else {
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+            Err(format!("Server error: {}", error_text).into())
+        }
     }
 
-    pub async fn refresh_token(
-        &self,
-        new_token: &str,
-    ) -> Result<TokenResponse, Box<dyn std::error::Error>> {
-        let url = format!("{}/auth/refresh-token", self.base_url);
+    pub async fn refresh_token(&self, token: &str) -> Result<String, Box<dyn std::error::Error>> {
+        let url = format!("{}/token/refresh/{}", self.base_url, token);
 
-        let response = self
-            .client
-            .post(&url)
-            .header("Authorization", format!("Bearer {}", new_token))
-            .send()
-            .await?;
+        let response = self.client.post(&url).send().await?;
 
-        let body = response.json::<TokenResponse>().await?;
-        Ok(body)
+        if response.status().is_success() {
+            let body = response.json::<TokenData>().await?;
+            Ok(body.data)
+        } else {
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+            Err(format!("Server error: {}", error_text).into())
+        }
     }
 }

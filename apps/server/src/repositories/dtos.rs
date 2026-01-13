@@ -3,17 +3,21 @@ use std::collections::HashMap;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
-use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Repository {
-    pub id: Uuid,
     pub name: String,
     pub owner: String,
     pub url: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+impl Repository {
+    pub fn _pk(&self) -> (String, String) {
+        (self.name.clone(), self.owner.clone())
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Validate)]
@@ -49,7 +53,6 @@ fn validate_target_branch(branch: &str) -> Result<(), ValidationError> {
 impl From<RepositoryInput> for Repository {
     fn from(input: RepositoryInput) -> Self {
         Repository {
-            id: Uuid::new_v4(),
             url: input.url,
             name: input.name,
             owner: input.owner,

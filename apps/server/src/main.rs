@@ -1,5 +1,6 @@
 mod common;
 mod repositories;
+mod token;
 
 use axum::{Extension, extract::DefaultBodyLimit, http::StatusCode, routing::Router};
 use axum_config::Config;
@@ -8,6 +9,8 @@ use repositories::router as repositories_router;
 use std::{sync::Arc, time::Duration};
 use tokio::net::TcpListener;
 use tower_http::timeout::TimeoutLayer;
+
+use crate::token::token_router;
 
 #[tokio::main]
 async fn main() {
@@ -23,6 +26,7 @@ async fn main() {
         database: Arc::new(db),
     };
 
+    let token_router = token_router();
     let repositories_router = repositories_router(state.clone());
 
     let listener = TcpListener::bind(&format!("{}:{}", server_config.host, server_config.port))
@@ -30,6 +34,7 @@ async fn main() {
         .expect("Failed to bind to address");
 
     let app = Router::new()
+        .merge(token_router)
         .merge(repositories_router)
         .layer(Extension(config))
         .layer(TimeoutLayer::with_status_code(

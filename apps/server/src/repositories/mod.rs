@@ -7,15 +7,11 @@ use axum::{
     routing::{get, post},
 };
 
-pub use controllers::*;
 pub use dtos::*;
 
 pub fn router(state: AppState) -> Router<AppState> {
-    let routes = Router::new()
-        .route("/", get(get_repository))
-        .route("/", post(analize_repository));
-
     Router::new()
-        .nest("/repositories", routes)
+        .route("/repositories/", get(controllers::get_repository))
+        .route("/repositories/", post(controllers::analyze_repository))
         .with_state(state)
 }

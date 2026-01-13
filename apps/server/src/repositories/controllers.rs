@@ -10,7 +10,7 @@ pub async fn get_repository(id: Path<Uuid>) -> HttpResult<JsonResponse> {
     Ok(JsonResponse::Ok().data(*id))
 }
 
-pub async fn analize_repository(
+pub async fn analyze_repository(
     State(state): State<AppState>,
     Dto(input): Dto<RepositoryInput>,
 ) -> HttpResult<JsonResponse> {

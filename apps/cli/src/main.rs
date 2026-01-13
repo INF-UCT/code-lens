@@ -1,6 +1,5 @@
 mod api;
 mod cli;
-mod token;
 mod ui;
 mod commands {
     pub mod generate;

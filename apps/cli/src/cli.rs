@@ -15,5 +15,5 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn print_welcome_header() {
-    println!("🔐 CodeLens - Generador de Tokens\n");
+    println!("CodeLens - Token Generator\n");
 }

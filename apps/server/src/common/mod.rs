@@ -1,6 +1,8 @@
 mod cors;
 mod database;
+mod errors;
 mod extractors;
+pub mod jsonwebtoken;
 
 use axum_config::config;
 use axum_responses::JsonResponse;
@@ -9,7 +11,9 @@ use std::sync::Arc;
 
 pub use cors::{CorsConfig, setup_cors};
 pub use database::*;
+pub use errors::*;
 pub use extractors::*;
+pub use jsonwebtoken::JwtConfig;
 
 pub type HttpResult<T = JsonResponse> = Result<T, JsonResponse>;
 

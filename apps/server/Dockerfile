@@ -16,11 +16,11 @@ WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY apps/server ./apps/server
+COPY apps/cli ./apps/cli
 COPY .config ./.config
 
 ENV CARGO_TARGET_DIR /app/target
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "cd apps/server && cargo watch -x 'run --bin server' -w src -w migrations -w /app/.config"]
-
+CMD ["sh", "-c", "cd apps/server && cargo watch -x run -w src"]
