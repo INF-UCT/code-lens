@@ -1,8 +1,14 @@
 FROM rust:1.92-slim-bookworm AS dev
 
 RUN apt-get update && apt-get install -y \
+    unzip \
     build-essential \
     pkg-config \
+    wireguard \
+    iproute2 \
+    wireguard-tools \
+    netcat-traditional \
+    iputils-ping \
     wget \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -16,11 +22,13 @@ WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY apps/server ./apps/server
-COPY apps/cli ./apps/cli
 COPY .config ./.config
 
 ENV CARGO_TARGET_DIR /app/target
 
+RUN chmod +x /app/apps/server/config/vpn.sh && \
+    chmod +x /app/apps/server/config/entrypoint.sh
+
 EXPOSE 8000
 
-CMD ["sh", "-c", "cd apps/server && cargo watch -x run -w src"]
+CMD ["/bin/bash", "/app/apps/server/config/entrypoint.sh"]

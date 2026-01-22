@@ -1,7 +1,12 @@
-use axum_config::config;
 use serde::Deserialize;
 use sqlx::{PgPool, migrate::Migrator, postgres::PgPoolOptions};
 use std::{path::Path, sync::Arc, time::Duration};
+use sword::prelude::*;
+
+#[injectable(provider)]
+pub struct Database {
+    pub pool: Arc<PgPool>,
+}
 
 #[derive(Clone, Deserialize)]
 #[config(key = "postgres-db")]
@@ -11,10 +16,6 @@ pub struct DatabaseConfig {
     pub min_connections: u8,
     pub max_connections: u8,
     pub acquire_timeout_ms: u64,
-}
-
-pub struct Database {
-    pool: Arc<PgPool>,
 }
 
 impl Database {
@@ -42,6 +43,6 @@ impl Database {
     }
 
     pub fn get_pool(&self) -> &PgPool {
-        &self.pool
+        &*self.pool
     }
 }

@@ -1,8 +1,7 @@
-use std::collections::HashMap;
-
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
+use std::collections::HashMap;
 use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]

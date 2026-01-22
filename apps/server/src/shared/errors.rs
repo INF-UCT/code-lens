@@ -1,8 +1,11 @@
-use axum_responses::HttpError;
+use simple_ldap::Error as LdapError;
+use sword::prelude::*;
 use thiserror::Error;
 
 use jsonwebtoken::errors::Error as JwtError;
 use sqlx::Error as SqlxError;
+
+pub type AppResult<T = JsonResponse> = Result<T, AppError>;
 
 #[derive(Debug, Error, HttpError)]
 pub enum AppError {
@@ -17,4 +20,8 @@ pub enum AppError {
     #[http(code = 400)]
     #[error("Bad request: {0}")]
     BadRequest(String),
+
+    #[http(code = 401)]
+    #[error("LDAP Authentication failed: {0}")]
+    LdapAuth(#[from] LdapError),
 }

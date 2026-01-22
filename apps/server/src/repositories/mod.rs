@@ -1,17 +1,15 @@
-mod controllers;
+mod controller;
 mod dtos;
 
-use crate::AppState;
-use axum::{
-    routing::Router,
-    routing::{get, post},
-};
+use controller::RepositoriesController;
+use sword::prelude::*;
 
 pub use dtos::*;
 
-pub fn router(state: AppState) -> Router<AppState> {
-    Router::new()
-        .route("/repositories/", get(controllers::get_repository))
-        .route("/repositories/", post(controllers::analyze_repository))
-        .with_state(state)
+pub struct RepositoriesModule;
+
+impl Module for RepositoriesModule {
+    fn register_adapters(adapters: &AdapterRegistry) {
+        adapters.register::<RepositoriesController>();
+    }
 }

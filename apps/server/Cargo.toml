@@ -4,12 +4,10 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.49.0", features = ["full"] }
-axum = "0.8.8"
-axum-config = "0.1.0"
-axum_responses = "0.5.4"
+sword = { git = "https://github.com/MrRevillod/sword.git", branch = "main", features = [
+    "validation-validator",
+] }
 
-argon2 = "0.5.3"
 jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
 
 uuid = { version = "1.19.0", features = ["serde", "v4"] }
@@ -29,5 +27,7 @@ sqlx = { version = "0.8.6", features = [
 
 tracing = "0.1.44"
 tracing-subscriber = "0.3.22"
-tower-http = { version = "0.6.8", features = ["cors", "timeout"] }
 thiserror = "2.0.17"
+simple-ldap = "8.0.1"
+url = "2.5.0"
+tokio = { version = "1.0", features = ["sync"] }

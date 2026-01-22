@@ -20,8 +20,6 @@ services:
       - code-lens-network
     volumes:
       - ./apps/server:/app/apps/server
-      - cargo_cache:/usr/local/cargo/registry
-      - ./.config:/app/.config
       - server_target:/app/target
 
   code-lens-nginx:
@@ -30,7 +28,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./.config/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - code-lens-server
     networks:
