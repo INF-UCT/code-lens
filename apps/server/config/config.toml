@@ -1,5 +1,5 @@
 [application]
-port = 6000
+port = 8000
 host = "0.0.0.0"
 
 [middlewares]
@@ -16,7 +16,7 @@ allow-origins = ["*"]
 
 [postgres-db]
 uri = "${POSTGRES_DATABASE_URL:postgres://localhost:5432/code-lens-db}"
-migrations_path = "migrations"
+migrations_path = "config/migrations"
 min_connections = 1
 max_connections = 10
 acquire_timeout_ms = 5000
@@ -26,7 +26,4 @@ secret = "${JWT_SECRET}"
 
 [ldap]
 url = "${LDAP_URL:ldap://localhost:389}"
-bind_dn = "${LDAP_BIND_DN:cn=admin,dc=example,dc=com}"
-bind_password = "${LDAP_BIND_PASSWORD:password}"
-base_dn = "${LDAP_BASE_DN:dc=example,dc=com}"
-user_attribute = "${LDAP_USER_ATTRIBUTE:uid}"
+base_dn = "${LDAP_BASE_DN}"

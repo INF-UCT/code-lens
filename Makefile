@@ -4,7 +4,7 @@ cli:
 run:
 	docker compose up
 
-rund:
+detach:
 	docker compose up -d
 
 clean:

@@ -5,7 +5,7 @@ use sword::prelude::*;
 
 #[injectable(provider)]
 pub struct Database {
-    pub pool: Arc<PgPool>,
+    pool: Arc<PgPool>,
 }
 
 #[derive(Clone, Deserialize)]

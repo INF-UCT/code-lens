@@ -5,7 +5,7 @@ use sword::prelude::*;
 pub struct RepositoriesController;
 
 impl RepositoriesController {
-    #[get("/:id")]
+    #[get("/{id}")]
     pub async fn get_repository(&self, _: Request) -> HttpResult<JsonResponse> {
         Ok(JsonResponse::Ok())
     }

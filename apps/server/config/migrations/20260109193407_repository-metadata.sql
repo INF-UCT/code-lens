@@ -9,12 +9,7 @@ CREATE TABLE tokens(
 
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username TEXT UNIQUE NOT NULL,
-    dn TEXT NOT NULL,
-    full_name TEXT,
-    email TEXT,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    username TEXT UNIQUE NOT NULL
 );
 
 CREATE INDEX idx_users_username ON users(username);

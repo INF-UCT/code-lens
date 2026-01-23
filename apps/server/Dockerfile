@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     wireguard \
     iproute2 \
+    libssl-dev \
     wireguard-tools \
     netcat-traditional \
     iputils-ping \
@@ -22,13 +23,10 @@ WORKDIR /app
 
 COPY Cargo.toml Cargo.lock ./
 COPY apps/server ./apps/server
-COPY .config ./.config
 
 ENV CARGO_TARGET_DIR /app/target
 
 RUN chmod +x /app/apps/server/config/vpn.sh && \
     chmod +x /app/apps/server/config/entrypoint.sh
-
-EXPOSE 8000
 
 CMD ["/bin/bash", "/app/apps/server/config/entrypoint.sh"]

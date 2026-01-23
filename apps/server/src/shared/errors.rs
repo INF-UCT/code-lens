@@ -1,4 +1,4 @@
-use simple_ldap::Error as LdapError;
+use ldap3::LdapError;
 use sword::prelude::*;
 use thiserror::Error;
 

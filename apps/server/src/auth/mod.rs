@@ -1,11 +1,13 @@
 mod controller;
-mod ldap;
-mod service;
+mod dtos;
+mod services;
 
 use controller::AuthController;
-use ldap::{Ldap, LdapConfigData};
-use service::AuthService;
+use services::LdapConfig;
 use sword::prelude::*;
+
+pub use dtos::LoginDto;
+pub use services::{AuthService, LdapClient};
 
 pub struct AuthModule;
 
@@ -19,9 +21,9 @@ impl Module for AuthModule {
     }
 
     async fn register_providers(config: &Config, providers: &ProviderRegistry) {
-        let ldap_config = config.get_or_panic::<LdapConfigData>();
-        let ldap = Ldap::new(ldap_config).await;
+        let ldap_config: LdapConfig = config.get_or_panic::<LdapConfig>();
+        let ldap_client = LdapClient::new(ldap_config).await;
 
-        providers.register(ldap);
+        providers.register(ldap_client);
     }
 }

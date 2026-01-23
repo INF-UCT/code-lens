@@ -15,10 +15,11 @@ services:
       code-lens-postgres:
         condition: service_healthy
     ports:
-      - "8000:8000"
+      - "8000"
     networks:
       - code-lens-network
     volumes:
+      - ./config/wg0.conf:/etc/wireguard/wg0.conf
       - ./apps/server:/app/apps/server
       - server_target:/app/target
 

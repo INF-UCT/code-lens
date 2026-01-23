@@ -5,7 +5,8 @@ presharedkey="$WIREGUARD_PRESHARED_KEY"
 wireguard_ip="$WIREGUARD_IP"
 wireguard_peer="$WIREGUARD_PEER"
 wireguard_endpoint="$WIREGUARD_ENDPOINT"
-kubernetes_endpoint="$KUBERNETES_ENDPOINT"
+vllm_endpoint="$VLLM_ENDPOINT"
+ldap_endpoint="$LDAP_ENDPOINT"
 
 echo "Setting up WireGuard VPN..."
 echo "WireGuard IP: $wireguard_ip"
@@ -19,9 +20,10 @@ ip address add dev wg0 "$wireguard_ip" peer "$wireguard_peer"
 
 wg set wg0 private-key privatekey \
  peer UBi3x7Cjv4lPABuWcbv7yTOgiDyb2ElLN+39J1gHqnU= preshared-key \
- presharedkey endpoint "$wireguard_endpoint":51820 \
- allowed-ips "$kubernetes_endpoint"/32,"$wireguard_peer"/32
+ presharedkey endpoint "$wireguard_endpoint" \
+ allowed-ips "$vllm_endpoint","$wireguard_peer"/32,"$ldap_endpoint"
 
 ip link set up dev wg0
 
-ip route add "$kubernetes_endpoint"/32 via "$wireguard_peer" dev wg0
+ip route add "$vllm_endpoint" via "$wireguard_peer" dev wg0
+ip route add "$ldap_endpoint" via "$wireguard_peer" dev wg0

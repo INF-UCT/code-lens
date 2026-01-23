@@ -1,10 +1,10 @@
-mod dtos;
+mod entity;
 mod repository;
 
-pub use dtos::{CreateUser, User};
-pub use repository::UserRepository;
-
 use sword::prelude::*;
+
+pub use entity::User;
+pub use repository::UserRepository;
 
 pub struct UsersModule;
 
