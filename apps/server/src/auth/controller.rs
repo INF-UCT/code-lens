@@ -11,6 +11,9 @@ impl AuthController {
     #[post("/login")]
     pub async fn login(&self, req: Request) -> HttpResult<JsonResponse> {
         let dto = req.body::<LoginDto>()?;
+
+        tracing::info!("User login with data: {dto:?}");
+
         let user = self.auth_service.login(dto).await?;
 
         Ok(JsonResponse::Ok().data(user))

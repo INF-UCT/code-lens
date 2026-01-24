@@ -1,0 +1,41 @@
+{
+	"name": "@inf-uct/code-lens",
+	"version": "1.0.0",
+	"description": "CLI tool for Code Lens",
+	"main": "dist/index.js",
+	"bin": {
+		"code-lens": "dist/main.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"start": "tsx src/main.ts",
+		"format": "prettier --write . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
+		"format:check": "prettier --check . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
+		"lint": "eslint src --ext .ts",
+		"lint:fix": "eslint src --ext .ts --fix",
+		"prepublishOnly": "npm run build"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/INF-UCT/code-lens-cli.git"
+	},
+	"keywords": [],
+	"author": "Luciano Revillod <lrevillod2022@alu.uct.cl>",
+	"license": "MIT",
+	"type": "module",
+	"bugs": {
+		"url": "https://github.com/INF-UCT/code-lens-cli/issues"
+	},
+	"homepage": "https://github.com/INF-UCT/code-lens-cli#readme",
+	"dependencies": {
+		"@clack/prompts": "^0.11.0"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.15.0",
+		"@types/node": "^22.10.1",
+		"eslint": "^9.15.0",
+		"prettier": "^3.4.2",
+		"tsx": "^4.19.2",
+		"typescript-eslint": "^8.17.0"
+	}
+}

@@ -43,6 +43,6 @@ impl Database {
     }
 
     pub fn get_pool(&self) -> &PgPool {
-        &*self.pool
+        &self.pool
     }
 }

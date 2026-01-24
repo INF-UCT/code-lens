@@ -1,6 +1,7 @@
-use crate::tokens::{RegisterTokenDto, TokensRepository, TokensService};
+use crate::tokens::{GenerateTokenDto, TokensRepository, TokensService};
 use std::sync::Arc;
 use sword::prelude::*;
+use uuid::Uuid;
 
 #[controller("/tokens")]
 pub struct TokensController {
@@ -9,23 +10,21 @@ pub struct TokensController {
 }
 
 impl TokensController {
-    #[post("/register")]
-    pub async fn register_token(&self, req: Request) -> HttpResult<JsonResponse> {
-        let dto = req.body_validator::<RegisterTokenDto>()?;
-        let token = self.tokens_service.generate(&dto)?;
+    #[get("/{user_id}")]
+    pub async fn list_tokens(&self, req: Request) -> HttpResult<JsonResponse> {
+        let user_id = req.param::<Uuid>("user_id")?;
+        let tokens = self.tokens_repository.find_by_user_id(&user_id).await?;
+
+        Ok(JsonResponse::Ok().data(tokens))
+    }
+
+    #[post("/generate")]
+    pub async fn generate_token(&self, req: Request) -> HttpResult<JsonResponse> {
+        let dto = req.body_validator::<GenerateTokenDto>()?;
+        let token = self.tokens_service.generate(&dto).await?;
 
         self.tokens_repository.save(&token).await?;
 
         Ok(JsonResponse::Ok().data(token.value))
-    }
-
-    #[post("/refresh/{token}")]
-    pub async fn refresh_token(&self, req: Request) -> HttpResult<JsonResponse> {
-        let token = req.param::<String>("token")?;
-        let new_token = self.tokens_service.refresh(&token)?;
-
-        self.tokens_repository.save(&new_token).await?;
-
-        Ok(JsonResponse::Ok().data(new_token.value))
     }
 }

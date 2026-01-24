@@ -8,7 +8,7 @@ use repository::TokensRepository;
 use service::TokensService;
 use sword::prelude::*;
 
-pub use dtos::{RegisterTokenDto, Token, TokenClaims};
+pub use dtos::{GenerateTokenDto, Token, TokenClaims};
 
 pub struct TokensModule;
 

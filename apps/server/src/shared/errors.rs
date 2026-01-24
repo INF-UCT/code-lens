@@ -13,6 +13,20 @@ pub enum AppError {
     #[error("Unauthorized: {0}")]
     Unauthorized(#[from] JwtError),
 
+    #[http(
+        code = 401,
+        message = "The requested token was not found. Try again or generate a new one."
+    )]
+    #[error("Unauthorized access")]
+    TokenNotFound,
+
+    #[http(
+        code = 401,
+        message = "The provided token is invalid. Please try again or generate a new one."
+    )]
+    #[error("Invalid token")]
+    InvalidToken,
+
     #[http(code = 500)]
     #[error("Database error: {0}")]
     Database(#[from] SqlxError),
@@ -21,7 +35,10 @@ pub enum AppError {
     #[error("Bad request: {0}")]
     BadRequest(String),
 
-    #[http(code = 401)]
+    #[http(
+        code = 401,
+        message = "Invalid Credentials. Please try again, or contact support."
+    )]
     #[error("LDAP Authentication failed: {0}")]
     LdapAuth(#[from] LdapError),
 }

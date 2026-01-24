@@ -28,7 +28,7 @@
 		"**/migrations": false,
 		".markdown": false,
 		"target": true,
-		"**/.svelte-kit": true,
+		"**/.svelte-kit": true
 	},
 	"explorer.fileNesting.enabled": true,
 	"explorer.fileNesting.expand": false,
@@ -66,22 +66,21 @@
 		"*.ts": "$(capture).js, $(capture).d.ts.map, $(capture).*.ts, $(capture)_*.js, $(capture)_*.ts",
 		"*.tsx": "$(capture).ts, $(capture).*.tsx, $(capture)_*.ts, $(capture)_*.tsx, $(capture).less, $(capture).module.less, $(capture).module.less.d.ts, $(capture).scss, $(capture).module.scss, $(capture).module.scss.d.ts, $(capture).css.ts",
 		"*-compose.yml": "healthchecks.yml"
-		
 	},
 	"[typescript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[css]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[html]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[json]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[toml]": {
 		"editor.defaultFormatter": "tamasfe.even-better-toml"
@@ -100,13 +99,13 @@
 		"editor.defaultFormatter": "rust-lang.rust-analyzer"
 	},
 	"[svelte]": {
-		"editor.defaultFormatter": "svelte.svelte-vscode",
+		"editor.defaultFormatter": "svelte.svelte-vscode"
 	},
 	"[jsonc]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"[jsonl]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"errorLens.enabled": true,
 	"javascript.updateImportsOnFileMove.enabled": "always",
@@ -132,7 +131,5 @@
 			"when": "**"
 		}
 	},
-	"typescript.preferences.autoImportSpecifierExcludeRegexes": [
-		"^(node:)?os$"
-	],
+	"typescript.preferences.autoImportSpecifierExcludeRegexes": ["^(node:)?os$"]
 }

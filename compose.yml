@@ -19,7 +19,6 @@ services:
     networks:
       - code-lens-network
     volumes:
-      - ./config/wg0.conf:/etc/wireguard/wg0.conf
       - ./apps/server:/app/apps/server
       - server_target:/app/target
 

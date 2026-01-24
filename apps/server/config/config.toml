@@ -21,8 +21,10 @@ min_connections = 1
 max_connections = 10
 acquire_timeout_ms = 5000
 
-[jsonwebtoken]
+[tokens]
 secret = "${JWT_SECRET}"
+max_refresh_count_months = 60
+
 
 [ldap]
 url = "${LDAP_URL:ldap://localhost:389}"

@@ -6,7 +6,7 @@ use database::DatabaseConfig;
 use sword::prelude::*;
 
 pub use database::Database;
-pub use errors::{AppError, AppResult};
+pub use errors::AppResult;
 pub use jsonwebtoken::JsonWebTokenService;
 
 pub struct SharedModule;

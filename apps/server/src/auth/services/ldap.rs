@@ -33,9 +33,9 @@ impl LdapClient {
 
         ldap3::drive!(conn);
 
-        LdapClient {
+        Self {
             client: Arc::new(RwLock::new(ldap)),
-            config: config,
+            config,
         }
     }
 

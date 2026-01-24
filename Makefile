@@ -1,5 +1,5 @@
 cli:
-	cd apps/cli && cargo run
+	cd apps/cli && npm start || true
 
 run:
 	docker compose up
@@ -10,8 +10,13 @@ detach:
 clean:
 	docker compose down -v
 
-lint:
-	cargo clippy --workspace --all-targets --all-features -- -D warnings
-
 fmt:
 	cargo fmt --all
+	cd apps/cli && npm run format
+
+lint:
+	cargo clippy --workspace --all-targets --all-features -- -D warnings
+	cd apps/cli && npm run lint
+
+migration:
+	cd apps/server && sqlx migrate add --source ./config/migrations $(name)

@@ -2607,6 +2607,7 @@ dependencies = [
  "sword",
  "thiserror",
  "tokio",
+ "tower-http",
  "tracing",
  "tracing-subscriber",
  "url",

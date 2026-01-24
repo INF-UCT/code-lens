@@ -1,3 +1,4 @@
 target/
 .env
-config/wg0.conf
+node_modules
+dist/
