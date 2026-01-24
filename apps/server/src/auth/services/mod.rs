@@ -8,7 +8,7 @@ use crate::{
 use std::sync::Arc;
 use sword::prelude::*;
 
-pub use ldap::{LdapClient, LdapConfig};
+pub use ldap::LdapClient;
 
 #[injectable]
 pub struct AuthService {

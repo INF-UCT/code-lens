@@ -36,16 +36,7 @@ export const request = async <T, E = unknown, R = unknown>(
 			body: opts.body ? JSON.stringify(opts.body) : undefined,
 		})
 
-		const data = await response.json()
-
-		return {
-			status: response.status,
-			success: response.ok,
-			message: data.message ?? "",
-			data: response.ok ? data : null,
-			error: !response.ok ? data : null,
-			errors: !response.ok ? data : null,
-		}
+		return (await response.json()) as Response<T, E, R>
 	} catch (error) {
 		return {
 			status: 500,

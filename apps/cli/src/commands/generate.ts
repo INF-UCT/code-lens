@@ -36,13 +36,20 @@ class GenerateTokenCommand implements Command<GenerateTokenData> {
 	async run(): Promise<void> {
 		const { repository_url } = await this.ui()
 
-		const response = await request("/tokens/generate", {
+		if (!state.getUser()) {
+			log.error("You must be logged in to generate a token.")
+			process.exit(1)
+		}
+
+		const user_id = state.getUser()?.id ?? ""
+
+		const response = await request<string>("/tokens/generate", {
 			method: "POST",
-			body: { user_id: state.getUser()!.id, repository_url },
+			body: { user_id, repository_url },
 		})
 
 		if (response.success && response.data) {
-			log.success(`Token generated successfully: ${response.data}`)
+			log.success(`Token generated successfully:\n ${response.data}\n`)
 		}
 
 		if (!response.success) {
