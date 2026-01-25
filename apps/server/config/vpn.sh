@@ -8,9 +8,6 @@ wireguard_endpoint="$WIREGUARD_ENDPOINT"
 vllm_endpoint="$VLLM_ENDPOINT"
 ldap_endpoint="$LDAP_ENDPOINT"
 
-echo "Setting up WireGuard VPN..."
-echo "WireGuard IP: $wireguard_ip"
-
 echo "$privatekey" > privatekey
 echo "$presharedkey" > presharedkey
 

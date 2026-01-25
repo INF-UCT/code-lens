@@ -3,8 +3,14 @@ name: Rust
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - ".github/workflows/cd/**"
+      - "apps/server/cli/**"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - ".github/workflows/cd/**"
+      - "apps/server/cli/**"
 
 jobs:
   check:

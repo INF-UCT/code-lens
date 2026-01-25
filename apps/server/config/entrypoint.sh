@@ -2,13 +2,16 @@
 
 set -e
 
-echo "Configurando conexión WireGuard..."
+echo "Setting up WireGuard..."
+
+chmod +x /app/apps/server/config/vpn.sh
+chmod +x /app/apps/server/config/entrypoint.sh
 
 if ! /app/apps/server/config/vpn.sh; then
-    echo "Error al configurar VPN, continuando sin ella..."
+    echo "Error setting up VPN, continuing without it..."
 else
-    echo "VPN configurada exitosamente"
+    echo "VPN configured successfully"
 fi
 
-echo "Iniciando..."
+echo "Starting..."
 cd apps/server && cargo watch -x run -w src -w config

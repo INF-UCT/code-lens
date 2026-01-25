@@ -37,7 +37,7 @@ services:
   code-lens-postgres:
     image: postgres:15
     container_name: code-lens-postgres
-    command: postgres -c log_statement=none -c log_duration=off -c log_min_duration_statement=-1
+    command: postgres -c log_min_messages=ERROR -c log_statement=none -c log_duration=off -c log_min_duration_statement=-1 -c log_checkpoints=off
     ports:
       - "5434:5432"
     volumes:
