@@ -1,7 +1,7 @@
 import { env } from "node:process"
-import { request } from "../api"
-import { Command } from "../main"
-import { state, User, UserData } from "../state"
+import { request } from "@/api"
+import { Command } from "@/main"
+import { state, User, UserData } from "@/state"
 import { intro, password as passwordInput, text, log } from "@clack/prompts"
 
 interface LoginData {

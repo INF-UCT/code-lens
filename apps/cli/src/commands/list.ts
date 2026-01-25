@@ -1,6 +1,6 @@
-import { request } from "../api"
-import { Command } from "../main"
-import { state } from "../state"
+import { request } from "@/api"
+import { Command } from "@/main"
+import { state } from "@/state"
 import { intro, log } from "@clack/prompts"
 
 interface Token {
@@ -28,12 +28,13 @@ class ListTokensCommand implements Command<void> {
 			process.exit(1)
 		}
 
-		const response = await request(`/tokens/${state.getUser()!.id}`, {
+		const response = await request<Token[]>(`/tokens/${state.getUser()!.id}`, {
 			method: "GET",
 		})
 
+		let tokens = response.data ?? []
+
 		if (response.success && response.data) {
-			const tokens = response.data as Token[]
 			if (tokens.length === 0) {
 				log.info("No active tokens found.")
 			} else {

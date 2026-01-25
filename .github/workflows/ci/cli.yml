@@ -4,9 +4,15 @@ on:
   push:
     branches: [main]
     paths: ["apps/cli/**"]
+    paths-ignore:
+      - ".github/workflows/cd/**"
+      - "apps/server/**"
   pull_request:
     branches: [main]
     paths: ["apps/cli/**"]
+    paths-ignore:
+      - ".github/workflows/cd/**"
+      - "apps/server/**"
 
 jobs:
   check:

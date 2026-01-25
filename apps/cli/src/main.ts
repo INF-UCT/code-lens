@@ -1,9 +1,9 @@
 import process from "node:process"
-import list from "./commands/list"
-import login from "./commands/login"
-import generate from "./commands/generate"
+import list from "@/commands/list"
+import login from "@/commands/login"
+import generate from "@/commands/generate"
 
-import { state } from "./state"
+import { state } from "@/state"
 import { select } from "@clack/prompts"
 
 const args = process.argv

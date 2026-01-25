@@ -1,6 +1,6 @@
-import { request } from "../api"
-import { Command } from "../main"
-import { state } from "../state"
+import { state } from "@/state"
+import { request } from "@/api"
+import { Command } from "@/main"
 import { intro, text, log } from "@clack/prompts"
 
 type GenerateTokenData = {
