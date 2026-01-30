@@ -5,10 +5,10 @@ mod service;
 
 use controller::TokensController;
 use repository::TokensRepository;
-use service::TokensService;
 use sword::prelude::*;
 
 pub use dtos::{GenerateTokenDto, Token, TokenClaims};
+pub use service::TokensService;
 
 pub struct TokensModule;
 

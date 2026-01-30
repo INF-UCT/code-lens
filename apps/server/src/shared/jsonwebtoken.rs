@@ -18,7 +18,7 @@ impl JsonWebTokenService {
         )?)
     }
 
-    pub fn _decode<C>(&self, token: &String, key: &[u8]) -> AppResult<C>
+    pub fn decode<C>(&self, token: &String, key: &[u8]) -> AppResult<C>
     where
         C: DeserializeOwned,
     {

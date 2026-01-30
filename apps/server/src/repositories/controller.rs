@@ -1,8 +1,11 @@
-use super::{Repository, RepositoryInput};
+use super::{AnalyzeRepositoryDto, RepositoriesService, Repository, RepositoryTokenCheck};
+use std::sync::Arc;
 use sword::prelude::*;
 
 #[controller("/repositories")]
-pub struct RepositoriesController;
+pub struct RepositoriesController {
+    service: Arc<RepositoriesService>,
+}
 
 impl RepositoriesController {
     #[get("/{id}")]
@@ -11,11 +14,14 @@ impl RepositoriesController {
     }
 
     #[post("/")]
+    #[interceptor(RepositoryTokenCheck)]
     pub async fn analyze_repository(&self, req: Request) -> HttpResult<JsonResponse> {
-        let body = req.body_validator::<RepositoryInput>()?;
+        let body = req.body_validator::<AnalyzeRepositoryDto>()?;
         let repository = Repository::from(body);
 
-        dbg!(&repository);
+        self.service
+            .git_clone(&repository.url, &repository.branch)
+            .await?;
 
         Ok(JsonResponse::Ok().data(repository))
     }

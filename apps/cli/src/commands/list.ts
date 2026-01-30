@@ -32,7 +32,7 @@ class ListTokensCommand implements Command<void> {
 			method: "GET",
 		})
 
-		let tokens = response.data ?? []
+		const tokens = response.data ?? []
 
 		if (response.success && response.data) {
 			if (tokens.length === 0) {

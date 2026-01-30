@@ -1,4 +1,4 @@
-export type RequestOptions = {
+export type RequestOpts = {
 	method: "GET" | "POST" | "PUT" | "DELETE"
 	body?: unknown
 	authorization?: string
@@ -17,7 +17,7 @@ type RequestResult<T, E, R> = Promise<Response<T, E, R>>
 
 export const request = async <T, E = unknown, R = unknown>(
 	route: string,
-	opts: RequestOptions
+	opts: RequestOpts
 ): RequestResult<T, E, R> => {
 	const headers: Record<string, string> = {
 		"Accept": "application/json",
@@ -29,6 +29,7 @@ export const request = async <T, E = unknown, R = unknown>(
 	}
 
 	const url = `http://localhost/api${route}`
+
 	try {
 		const response = await fetch(url, {
 			method: opts.method,

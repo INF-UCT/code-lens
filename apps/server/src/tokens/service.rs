@@ -44,4 +44,8 @@ impl TokensService {
             created_at: now,
         })
     }
+
+    pub fn decode(&self, token: &String) -> AppResult<TokenClaims> {
+        self.jwt_service.decode(token, &self.config.secret.as_ref())
+    }
 }

@@ -23,9 +23,14 @@ acquire_timeout_ms = 5000
 
 [tokens]
 secret = "${JWT_SECRET}"
-max_refresh_count_months = 60
-
 
 [ldap]
 url = "${LDAP_URL:ldap://localhost:389}"
 base_dn = "${LDAP_BASE_DN}"
+
+[repositories]
+ignore_patterns = "dist|build|target|tests|__tests__|spec|_test_"
+default_clone_dir = "${TMPDIR}/code-lens"
+max_folder_size_mb = 50
+max_files_per_folder = 200
+max_file_size_mb = 5

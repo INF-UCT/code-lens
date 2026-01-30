@@ -9,6 +9,8 @@ pub struct Repository {
     pub name: String,
     pub owner: String,
     pub url: String,
+    pub branch: String,
+    pub commit_sha: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -20,7 +22,7 @@ impl Repository {
 }
 
 #[derive(Clone, Debug, Deserialize, Validate)]
-pub struct RepositoryInput {
+pub struct AnalyzeRepositoryDto {
     #[validate(url)]
     pub url: String, // github.event.repository.html_url
 
@@ -30,11 +32,15 @@ pub struct RepositoryInput {
     #[validate(length(min = 1, max = 255))]
     pub owner: String, // $GITHUB_REPOSITORY_OWNER
 
-    #[validate(custom(function = validate_target_branch))]
-    pub pr_target_branch: String, // github.event.pull_request.base.ref
+    #[serde(default)]
+    pub branch: String, // For push events
 
-    #[validate(length(min = 1, max = 255))]
-    pub pr_from_branch: String, // github.event.pull_request.head.ref
+    #[serde(default)]
+    pub commit_sha: Option<String>, // For push events
+
+    #[serde(default)]
+    #[validate(custom(function = "validate_target_branch"))]
+    pub pr_target_branch: Option<String>, // github.event.pull_request.base.ref
 }
 
 fn validate_target_branch(branch: &str) -> Result<(), ValidationError> {
@@ -49,14 +55,16 @@ fn validate_target_branch(branch: &str) -> Result<(), ValidationError> {
     Ok(())
 }
 
-impl From<RepositoryInput> for Repository {
-    fn from(input: RepositoryInput) -> Self {
+impl From<AnalyzeRepositoryDto> for Repository {
+    fn from(input: AnalyzeRepositoryDto) -> Self {
         Repository {
             url: input.url,
             name: input.name,
             owner: input.owner,
             created_at: Utc::now(),
             updated_at: Utc::now(),
+            branch: input.branch,
+            commit_sha: input.commit_sha,
         }
     }
 }

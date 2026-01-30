@@ -20,3 +20,6 @@ lint:
 
 migration:
 	cd apps/server && sqlx migrate add --source ./config/migrations $(name)
+
+machete:
+	cargo machete

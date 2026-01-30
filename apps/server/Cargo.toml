@@ -8,13 +8,11 @@ sword = { git = "https://github.com/MrRevillod/sword.git", rev = "96927c4", feat
     "validation-validator",
 ] }
 
-jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
-
 uuid = { version = "1.19.0", features = ["serde", "v4"] }
 chrono = { version = "0.4.42", features = ["serde"] }
+jsonwebtoken = { version = "10.2.0", features = ["rust_crypto"] }
 
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
 validator = { version = "0.20.0", features = ["derive"] }
 
 sqlx = { version = "0.8.6", features = [
@@ -28,7 +26,9 @@ sqlx = { version = "0.8.6", features = [
 tracing = "0.1.44"
 tracing-subscriber = "0.3.22"
 thiserror = "2.0.17"
-url = "2.5.0"
-tokio = { version = "1.0", features = ["sync"] }
 ldap3 = { version = "0.12.1", features = ["tls"] }
 tower-http = { version = "0.6.8", features = ["trace", "tracing"] }
+tokio = { version = "1", features = ["full"] }
+git2 = "0.18"
+regex = "1.10"
+jwalk = "0.8"

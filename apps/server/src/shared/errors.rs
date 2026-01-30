@@ -5,6 +5,8 @@ use thiserror::Error;
 use jsonwebtoken::errors::Error as JwtError;
 use sqlx::Error as SqlxError;
 
+use crate::repositories::RepositoryError;
+
 pub type AppResult<T = JsonResponse> = Result<T, AppError>;
 
 #[derive(Debug, Error, HttpError)]
@@ -41,4 +43,11 @@ pub enum AppError {
     )]
     #[error("LDAP Authentication failed: {0}")]
     LdapAuth(#[from] LdapError),
+
+    #[http(
+        code = 500,
+        message = "Error cloning and processing repository. Please try again, or contact support."
+    )]
+    #[error("Clone error: {0}")]
+    Clone(#[from] RepositoryError),
 }
