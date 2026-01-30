@@ -7,7 +7,6 @@ use validator::{Validate, ValidationError};
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Repository {
     pub name: String,
-    pub owner: String,
     pub url: String,
     pub branch: String,
     pub commit_sha: String,
@@ -16,21 +15,18 @@ pub struct Repository {
 }
 
 impl Repository {
-    pub fn _pk(&self) -> (String, String) {
-        (self.name.clone(), self.owner.clone())
+    pub fn _pk(&self) -> String {
+        self.name.clone()
     }
 }
 
 #[derive(Clone, Debug, Deserialize, Validate)]
 pub struct AnalyzeRepositoryDto {
-    #[validate(url)]
-    pub url: String, // github.event.repository.html_url
-
     #[validate(length(min = 1, max = 255))]
     pub name: String, // $GITHUB_REPOSITORY
 
-    #[validate(length(min = 1, max = 255))]
-    pub owner: String, // $GITHUB_REPOSITORY_OWNER
+    #[validate(url)]
+    pub url: String, // github.event.repository.html_url
 
     #[validate(custom(function = "validate_branch"))]
     pub branch: String, // For push events
@@ -56,7 +52,6 @@ impl From<AnalyzeRepositoryDto> for Repository {
         Repository {
             url: input.url,
             name: input.name,
-            owner: input.owner,
             created_at: Utc::now(),
             updated_at: Utc::now(),
             branch: input.branch,
