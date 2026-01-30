@@ -9,16 +9,24 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Send repository metadata
-      shell: bash
-      env:
-        TOKEN: ${{ inputs.token }}
-        REPO_URL: ${{ github.event.repository.html_url }}
-        REPO_NAME: ${{ github.repository }}
-        REPO_OWNER: ${{ github.repository_owner }}
-        BRANCH: ${{ github.ref_name }}
-        COMMIT_SHA: ${{ github.sha }}
-        PR_TARGET: ${{ github.event.pull_request.base.ref }}
-      run: |
-        JSON=$(jq -n --arg url "$REPO_URL" --arg name "$REPO_NAME" --arg owner "$REPO_OWNER" --arg branch "$BRANCH" --arg commit_sha "$COMMIT_SHA" --arg pr_target_branch "$PR_TARGET" '{url: $url, name: $name, owner: $owner, branch: $branch, commit_sha: $commit_sha, pr_target_branch: $pr_target_branch}')
-        curl -X POST http://localhost/api/repositories -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "$JSON"
+     - name: Send repository metadata
+       shell: bash
+       env:
+         TOKEN: ${{ inputs.token }}
+         REPO_URL: ${{ github.event.repository.html_url }}
+         REPO_NAME: ${{ github.repository }}
+         REPO_OWNER: ${{ github.repository_owner }}
+         BRANCH: ${{ github.ref_name }}
+         COMMIT_SHA: ${{ github.sha }}
+         PR_TARGET: ${{ github.event.pull_request.base.ref }}
+       run: |
+         echo "Debugging GitHub context variables:"
+         echo "REPO_URL: $REPO_URL"
+         echo "REPO_NAME: $REPO_NAME"
+         echo "REPO_OWNER: $REPO_OWNER"
+         echo "BRANCH: $BRANCH"
+         echo "COMMIT_SHA: $COMMIT_SHA"
+         echo "PR_TARGET: $PR_TARGET"
+         JSON=$(jq -n --arg url "$REPO_URL" --arg name "$REPO_NAME" --arg owner "$REPO_OWNER" --arg branch "$BRANCH" --arg commit_sha "$COMMIT_SHA" --arg pr_target_branch "$PR_TARGET" '{url: $url, name: $name, owner: $owner, branch: $branch, commit_sha: $commit_sha, pr_target_branch: $pr_target_branch}')
+         echo "JSON payload: $JSON"
+         curl -X POST http://localhost/api/repositories -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "$JSON"
