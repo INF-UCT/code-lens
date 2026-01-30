@@ -10,7 +10,7 @@ pub struct Repository {
     pub owner: String,
     pub url: String,
     pub branch: String,
-    pub commit_sha: Option<String>,
+    pub commit_sha: String,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }
@@ -32,22 +32,18 @@ pub struct AnalyzeRepositoryDto {
     #[validate(length(min = 1, max = 255))]
     pub owner: String, // $GITHUB_REPOSITORY_OWNER
 
-    #[serde(default)]
+    #[validate(custom(function = "validate_branch"))]
     pub branch: String, // For push events
 
     #[serde(default)]
-    pub commit_sha: Option<String>, // For push events
-
-    #[serde(default)]
-    #[validate(custom(function = "validate_target_branch"))]
-    pub pr_target_branch: Option<String>, // github.event.pull_request.base.ref
+    pub commit_sha: String, // For push events
 }
 
-fn validate_target_branch(branch: &str) -> Result<(), ValidationError> {
+fn validate_branch(branch: &str) -> Result<(), ValidationError> {
     if branch != "main" && branch != "master" {
         return Err(ValidationError {
-            code: "pr_target_branch".into(),
-            message: Some("Target branch must be 'main' or 'master'".into()),
+            code: "branch".into(),
+            message: Some("Branch must be 'main' or 'master'".into()),
             params: HashMap::new(),
         });
     }

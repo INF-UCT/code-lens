@@ -7,7 +7,6 @@ use sword::prelude::*;
 
 pub use database::Database;
 pub use errors::AppResult;
-pub use errors::AppError;
 pub use jsonwebtoken::JsonWebTokenService;
 
 pub struct SharedModule;

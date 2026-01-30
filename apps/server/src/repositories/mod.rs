@@ -29,4 +29,8 @@ impl Module for RepositoriesModule {
     fn register_adapters(adapters: &AdapterRegistry) {
         adapters.register::<RepositoriesController>();
     }
+
+    fn register_components(components: &ComponentRegistry) {
+        components.register::<RepositoriesService>();
+    }
 }

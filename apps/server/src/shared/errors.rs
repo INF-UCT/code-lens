@@ -12,6 +12,7 @@ pub type AppResult<T = JsonResponse> = Result<T, AppError>;
 #[derive(Debug, Error, HttpError)]
 pub enum AppError {
     #[http(code = 403)]
+    #[tracing(error)]
     #[error("Unauthorized: {0}")]
     Unauthorized(#[from] JwtError),
 

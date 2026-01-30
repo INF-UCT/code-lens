@@ -32,3 +32,4 @@ tokio = { version = "1", features = ["full"] }
 git2 = "0.18"
 regex = "1.10"
 jwalk = "0.8"
+serde_json = "1.0.149"

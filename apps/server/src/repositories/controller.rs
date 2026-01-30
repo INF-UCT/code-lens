@@ -16,12 +16,15 @@ impl RepositoriesController {
     #[post("/")]
     #[interceptor(RepositoryTokenCheck)]
     pub async fn analyze_repository(&self, req: Request) -> HttpResult<JsonResponse> {
-        let body = req.body_validator::<AnalyzeRepositoryDto>()?;
-        let repository = Repository::from(body);
+        let dto = req.body_validator::<AnalyzeRepositoryDto>()?;
 
-        self.service
-            .git_clone(&repository.url, &repository.branch)
-            .await?;
+        tracing::info!("Object {dto:?}");
+
+        let repository = Repository::from(dto);
+
+        // self.service
+        //     .git_clone(&repository.url, &repository.branch)
+        //     .await?;
 
         Ok(JsonResponse::Ok().data(repository))
     }
