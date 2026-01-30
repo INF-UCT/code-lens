@@ -1,0 +1,31 @@
+sequenceDiagram
+    participant Client
+    participant Server
+    participant Git
+    participant FS
+    participant vLLM
+    participant DB
+
+    Client->>Server: POST /api/repositories (payload GitHub)
+    Server->>Server: Valida payload (AnalyzeRepositoryDto)
+    Server->>Git: git clone url (branch/commit_sha)
+    Git-->>Server: Repo clonado en dir temporal
+    Server->>FS: Sanitiza repo (jwalk: filtra dirs/files grandes, patterns)
+    FS-->>Server: Repo limpio
+    Server->>Server: Spawnea task async para análisis
+    Server-->>Client: Respuesta OK (task en background)
+
+    Server->>FS: Selecciona archivos clave (README, main.*, config)
+    FS-->>Server: Lista de archivos
+    loop Por cada archivo/chunk
+        Server->>Server: Divide en chunks (500-1000 líneas, tokens <4000)
+        Server->>vLLM: Prompt resumen: "Resume este código: propósito, componentes, dependencias. Formato específico."
+        vLLM-->>Server: Resumen textual (e.g., "Archivo X: hace Y, depende de Z")
+    end
+
+    Server->>vLLM: Prompt síntesis: "Genera docs conceptuales en MD+PlantUML basado en estos resúmenes"
+    vLLM-->>Server: Markdown con PlantUML embebido
+    Server->>DB: Almacena docs (titulo, contenido MD, repo_id)
+    DB-->>Server: OK
+
+    Note over Server: Docs listos para fetch/render client-side
