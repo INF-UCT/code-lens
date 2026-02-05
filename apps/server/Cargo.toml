@@ -30,6 +30,6 @@ ldap3 = { version = "0.12.1", features = ["tls"] }
 tower-http = { version = "0.6.8", features = ["trace", "tracing"] }
 tokio = { version = "1", features = ["full"] }
 git2 = "0.18"
-regex = "1.10"
 jwalk = "0.8"
 serde_json = "1.0.149"
+regex-lite = "0.1.8"

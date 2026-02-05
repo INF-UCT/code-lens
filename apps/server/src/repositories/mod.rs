@@ -1,6 +1,7 @@
 mod controller;
 mod dtos;
 mod interceptor;
+mod repository;
 mod service;
 
 use controller::RepositoriesController;
@@ -14,13 +15,13 @@ pub use service::*;
 #[derive(Error, Debug)]
 pub enum RepositoryError {
     #[error("Git clone failed: {0}")]
-    CloneError(#[from] git2::Error),
+    Clone(#[from] git2::Error),
 
     #[error("IO error: {0}")]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
 
     #[error("Sanitization error: {0}")]
-    SanitizationError(String),
+    Sanitization(String),
 }
 
 pub struct RepositoriesModule;

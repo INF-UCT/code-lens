@@ -1,9 +1,11 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    username TEXT UNIQUE NOT NULL
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL
 );
 
 CREATE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_email ON users(email);
 
 CREATE TABLE tokens(
     id UUID PRIMARY KEY,

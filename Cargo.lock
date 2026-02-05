@@ -2729,7 +2729,7 @@ dependencies = [
  "jsonwebtoken",
  "jwalk",
  "ldap3",
- "regex",
+ "regex-lite",
  "serde",
  "serde_json",
  "sqlx",

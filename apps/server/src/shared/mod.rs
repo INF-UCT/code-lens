@@ -1,5 +1,6 @@
 mod database;
 pub mod errors;
+mod event_queue;
 mod jsonwebtoken;
 
 use database::DatabaseConfig;
@@ -7,6 +8,7 @@ use sword::prelude::*;
 
 pub use database::Database;
 pub use errors::AppResult;
+pub use event_queue::{Event, EventQueue, EventSubscriber};
 pub use jsonwebtoken::JsonWebTokenService;
 
 pub struct SharedModule;

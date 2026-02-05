@@ -5,6 +5,7 @@ use crate::{
     shared::AppResult,
     users::{User, UserRepository},
 };
+
 use std::sync::Arc;
 use sword::prelude::*;
 

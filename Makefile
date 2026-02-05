@@ -19,7 +19,7 @@ lint:
 	cd apps/cli && npm run lint
 
 migration:
-	cd apps/server && sqlx migrate add --source ./config/migrations $(name)
+	cd apps/server && sqlx migrate add --source ./config/migrations "$(name)"
 
 machete:
 	cargo machete

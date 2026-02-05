@@ -1,7 +1,8 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
-use std::collections::HashMap;
+use std::{collections::HashMap, path::PathBuf};
+use uuid::Uuid;
 use validator::{Validate, ValidationError};
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
@@ -14,11 +15,7 @@ pub struct Repository {
     pub updated_at: DateTime<Utc>,
 }
 
-impl Repository {
-    pub fn _pk(&self) -> String {
-        self.name.clone()
-    }
-}
+pub type AnalyzeRepositoryData = (Uuid, PathBuf, String);
 
 #[derive(Clone, Debug, Deserialize, Validate)]
 pub struct AnalyzeRepositoryDto {
