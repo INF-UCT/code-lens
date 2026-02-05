@@ -10,11 +10,11 @@ pub struct User {
 }
 
 impl User {
-    pub fn new(username: String) -> Self {
+    pub fn new(username: String, email: String) -> Self {
         Self {
             id: Uuid::new_v4(),
             username,
-            email: "".to_owned(),
+            email,
         }
     }
 }

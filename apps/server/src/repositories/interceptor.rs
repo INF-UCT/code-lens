@@ -9,7 +9,7 @@ pub struct RepositoryTokenCheck {
 
 impl OnRequest for RepositoryTokenCheck {
     async fn on_request(&self, mut req: Request) -> HttpInterceptorResult {
-        let auth_header = req.authorization().ok_or(JsonResponse::Unauthorized())?;
+        let auth_header = req.authorization().ok_or_else(JsonResponse::Unauthorized)?;
 
         if !auth_header.starts_with("Bearer ") {
             return Err(JsonResponse::Unauthorized());

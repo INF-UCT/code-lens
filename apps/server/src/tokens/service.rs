@@ -23,12 +23,12 @@ pub struct TokensService {
 }
 
 impl TokensService {
-    pub async fn generate(&self, input: &GenerateTokenDto) -> AppResult<Token> {
+    pub fn generate(&self, input: &GenerateTokenDto) -> AppResult<Token> {
         let now = Utc::now();
         let id = Uuid::new_v4();
 
         let claims = TokenClaims {
-            id: id.to_string(),
+            id,
             exp: (now + Duration::days(12 * 30)).timestamp(),
         };
 

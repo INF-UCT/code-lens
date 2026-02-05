@@ -12,6 +12,15 @@ pub struct TokensRepository {
 }
 
 impl TokensRepository {
+    pub async fn find_by_id(&self, id: &Uuid) -> AppResult<Option<Token>> {
+        let token = sqlx::query_as::<_, Token>("SELECT * FROM tokens WHERE id = $1")
+            .bind(id)
+            .fetch_optional(self.database.get_pool())
+            .await?;
+
+        Ok(token)
+    }
+
     pub async fn save(&self, token: &Token) -> AppResult<()> {
         sqlx::query(
             "INSERT INTO tokens (id, user_id, value, repository_url, created_at)

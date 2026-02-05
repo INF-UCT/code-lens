@@ -10,7 +10,7 @@ pub use subscriber::EventSubscriber;
 #[derive(Debug)]
 pub enum Event {
     SendEmail,
-    AnalyzeRepository(AnalyzeRepositoryData),
+    InitDocsGen(AnalyzeRepositoryData),
 }
 
 #[injectable(provider)]
@@ -19,11 +19,11 @@ pub struct EventQueue {
 }
 
 impl EventQueue {
-    pub fn new(tx: mpsc::Sender<Event>) -> Self {
+    pub const fn new(tx: mpsc::Sender<Event>) -> Self {
         Self { tx }
     }
 
-    pub async fn _publish(&self, event: Event) {
+    pub async fn publish(&self, event: Event) {
         self.tx.send(event).await.ok();
     }
 }

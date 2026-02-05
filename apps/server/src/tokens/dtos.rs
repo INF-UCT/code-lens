@@ -15,7 +15,7 @@ pub struct Token {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct TokenClaims {
-    pub id: String,
+    pub id: Uuid,
     pub exp: i64,
 }
 

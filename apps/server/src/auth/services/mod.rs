@@ -19,16 +19,19 @@ pub struct AuthService {
 
 impl AuthService {
     pub async fn login(&self, input: LoginDto) -> AppResult<User> {
-        self.ldap
+        let email = self
+            .ldap
             .authenticate(&input.username, &input.password)
             .await?;
+
+        tracing::info!("LDAP authentication successful. Email: {}", email);
 
         let user_exists = self.users.find_by_username(&input.username).await?;
 
         tracing::info!("User exists: {:?}", user_exists.is_some());
 
         let Some(user) = user_exists else {
-            let new_user = User::new(input.username.to_owned());
+            let new_user = User::new(input.username, email);
             self.users.create(&new_user).await?;
 
             tracing::info!("Created new user: {:?}", new_user);

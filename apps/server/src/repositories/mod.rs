@@ -10,6 +10,7 @@ use thiserror::Error;
 
 pub use dtos::*;
 pub use interceptor::RepositoryTokenCheck;
+pub use repository::RepositoriesRepository;
 pub use service::*;
 
 #[derive(Error, Debug)]
@@ -33,5 +34,6 @@ impl Module for RepositoriesModule {
 
     fn register_components(components: &ComponentRegistry) {
         components.register::<RepositoriesService>();
+        components.register::<RepositoriesRepository>();
     }
 }

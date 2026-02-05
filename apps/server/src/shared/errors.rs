@@ -46,9 +46,17 @@ pub enum AppError {
     LdapAuth(#[from] LdapError),
 
     #[http(
+        code = 401,
+        message = "No email address is associated with your account. Please contact support."
+    )]
+    #[error("LDAP Email not found")]
+    LdapEmailNotFound,
+
+    #[http(
         code = 500,
         message = "Error cloning and processing repository. Please try again, or contact support."
     )]
+    #[tracing(error)]
     #[error("Clone error: {0}")]
     Clone(#[from] RepositoryError),
 }

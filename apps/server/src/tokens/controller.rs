@@ -21,7 +21,7 @@ impl TokensController {
     #[post("/generate")]
     pub async fn generate_token(&self, req: Request) -> HttpResult<JsonResponse> {
         let dto = req.body_validator::<GenerateTokenDto>()?;
-        let token = self.tokens_service.generate(&dto).await?;
+        let token = self.tokens_service.generate(&dto)?;
 
         self.tokens_repository.save(&token).await?;
 
