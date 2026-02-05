@@ -9,6 +9,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/main.ts",
+		"watch": "tsx src/main.ts",
 		"format": "prettier --write . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
 		"format:check": "prettier --check . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
 		"lint": "eslint src --ext .ts",
