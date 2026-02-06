@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-sword = { git = "https://github.com/MrRevillod/sword.git", rev = "96927c4", features = [
+sword = { git = "https://github.com/MrRevillod/sword.git", features = [
+	"adapter-http-controllers",
     "validation-validator",
 ] }
 

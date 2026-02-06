@@ -15,10 +15,12 @@ impl EventSubscriber {
         }
     }
 
-    pub async fn handle_events(&self) {
-        while let Some(event) = self.rx.lock().await.recv().await {
-            self.handle_event(event);
-        }
+    pub fn handle_events(self) {
+        tokio::spawn(async move {
+            while let Some(event) = self.rx.lock().await.recv().await {
+                self.handle_event(event);
+            }
+        });
     }
 
     fn handle_event(&self, event: Event) {

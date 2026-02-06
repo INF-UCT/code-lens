@@ -467,15 +467,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "colored"
-version = "3.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "faf9468729b8cbcea668e36183cb69d317348c2e08e994829fb56ebfdfbaac34"
-dependencies = [
- "windows-sys 0.61.2",
-]
-
-[[package]]
 name = "compression-codecs"
 version = "0.4.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3168,12 +3159,11 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 [[package]]
 name = "sword"
 version = "0.2.1"
-source = "git+https://github.com/MrRevillod/sword.git?rev=96927c4#96927c4285bb01893ba6e9294d8c0ab55c315ce7"
+source = "git+https://github.com/MrRevillod/sword.git#3894d2bbba1c0fab68202a28d279b695d486e340"
 dependencies = [
  "axum",
  "axum_responses 0.5.4 (git+https://github.com/MrRevillod/AxumResponses.git)",
  "bytes",
- "colored",
  "console 0.15.11",
  "form_urlencoded",
  "futures-lite",
@@ -3183,7 +3173,6 @@ dependencies = [
  "parking_lot",
  "serde",
  "serde_json",
- "serde_path_to_error",
  "serde_urlencoded",
  "sword-core",
  "sword-layers",
@@ -3198,10 +3187,12 @@ dependencies = [
 [[package]]
 name = "sword-core"
 version = "0.2.1"
-source = "git+https://github.com/MrRevillod/sword.git?rev=96927c4#96927c4285bb01893ba6e9294d8c0ab55c315ce7"
+source = "git+https://github.com/MrRevillod/sword.git#3894d2bbba1c0fab68202a28d279b695d486e340"
 dependencies = [
  "axum",
  "axum_responses 0.5.4 (git+https://github.com/MrRevillod/AxumResponses.git)",
+ "byte-unit",
+ "duration-str",
  "inventory",
  "parking_lot",
  "regex-lite",
@@ -3239,13 +3230,12 @@ dependencies = [
 [[package]]
 name = "sword-macros"
 version = "0.2.1"
-source = "git+https://github.com/MrRevillod/sword.git?rev=96927c4#96927c4285bb01893ba6e9294d8c0ab55c315ce7"
+source = "git+https://github.com/MrRevillod/sword.git#3894d2bbba1c0fab68202a28d279b695d486e340"
 dependencies = [
  "axum",
  "proc-macro-error",
  "proc-macro2",
  "quote",
- "regex-lite",
  "syn 2.0.114",
 ]
 

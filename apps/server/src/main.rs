@@ -25,7 +25,7 @@ async fn main() {
     let event_queue = EventQueue::new(tx);
     let event_subscriber = EventSubscriber::new(rx);
 
-    tokio::spawn(async move { event_subscriber.handle_events().await });
+    event_subscriber.handle_events();
 
     let app = Application::builder()
         .with_provider(event_queue)
