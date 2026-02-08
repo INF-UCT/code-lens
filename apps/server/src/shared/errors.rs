@@ -1,11 +1,9 @@
+use crate::repositories::RepositoryError;
+use jsonwebtoken::errors::Error as JwtError;
 use ldap3::LdapError;
+use sqlx::Error as SqlxError;
 use sword::prelude::*;
 use thiserror::Error;
-
-use jsonwebtoken::errors::Error as JwtError;
-use sqlx::Error as SqlxError;
-
-use crate::repositories::RepositoryError;
 
 pub type AppResult<T = JsonResponse> = Result<T, AppError>;
 

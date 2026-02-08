@@ -1,3 +1,5 @@
+mod preprocessor;
+
 use crate::{
     repositories::*,
     shared::{AppResult, Event, EventQueue},
@@ -11,13 +13,13 @@ use sword::prelude::*;
 use tokio::fs;
 use uuid::Uuid;
 
+pub use preprocessor::RepositoriesPreprocessor;
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[config(key = "repositories")]
 pub struct RepositoriesConfig {
     pub clone_dir: String,
-    pub ignore_patterns: String,
-    pub max_folder_size_mb: u64,
-    pub max_files_per_folder: usize,
+    pub rignore_file_path: String,
     pub max_file_size_mb: u64,
 }
 
@@ -26,6 +28,7 @@ pub struct RepositoriesService {
     config: RepositoriesConfig,
     event_queue: Arc<EventQueue>,
     repository: Arc<RepositoriesRepository>,
+    preprocessor: Arc<RepositoriesPreprocessor>,
 }
 
 impl RepositoriesService {
@@ -40,6 +43,8 @@ impl RepositoriesService {
     ) -> AppResult<Uuid> {
         let repo = self.get_or_create(&owner.id, input).await?;
         let clone_path = self.clone_to_fs(&repo).await?;
+
+        self.preprocessor.run(&clone_path).await?;
 
         self.event_queue
             .publish(Event::InitDocsGen((repo.id, clone_path, owner.email)))

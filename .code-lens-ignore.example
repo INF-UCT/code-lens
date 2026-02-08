@@ -1,0 +1,50 @@
+# .code-lens-ignore
+# 
+# Archivo de configuración específico del repositorio para ignorar archivos
+# durante el preprocesamiento para análisis de Code Lens.
+#
+# Este archivo es opcional y puede colocarse en la raíz de cualquier repositorio
+# que se analice. Los patrones definidos aquí se SUMAN a los patrones globales
+# del archivo .rgignore del servidor.
+#
+# Sintaxis: Patrones glob estándar
+# - Las líneas vacías y las que comienzan con # son ignoradas
+# - Un patrón por línea
+# - Los patrones son relativos a la raíz del repositorio
+
+# Ejemplos de uso:
+
+# Ignorar archivos PDF grandes
+*.pdf
+
+# Ignorar archivos de datos
+data/
+*.csv
+*.json
+*.xml
+
+# Ignorar archivos de documentación que no aportan al código
+docs/assets/
+*.md
+
+# Ignorar archivos de configuración específicos
+.env.local
+secrets.yml
+
+# Ignorar archivos generados por herramientas
+generated/
+*.generated.*
+
+# Ignorar archivos multimedia
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.mp4
+*.mov
+
+# Ignorar bases de datos locales
+*.db
+*.sqlite
+*.sqlite3

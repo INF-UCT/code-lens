@@ -30,8 +30,7 @@ base_dn = "${LDAP_BASE_DN}"
 
 [repositories]
 clone_dir = "${REPOSITORIES_DIR}"
-max_folder_size_mb = 50
-max_files_per_folder = 200
+rignore_file_path = "config/ignore-patterns"
 max_file_size_mb = 5
 
 [mailer]

@@ -2,7 +2,7 @@ mod controller;
 mod dtos;
 mod interceptor;
 mod repository;
-mod service;
+mod services;
 
 use controller::RepositoriesController;
 use sword::prelude::*;
@@ -11,7 +11,7 @@ use thiserror::Error;
 pub use dtos::*;
 pub use interceptor::RepositoryTokenCheck;
 pub use repository::RepositoriesRepository;
-pub use service::*;
+pub use services::*;
 
 #[derive(Error, Debug)]
 pub enum RepositoryError {
@@ -35,5 +35,6 @@ impl Module for RepositoriesModule {
     fn register_components(components: &ComponentRegistry) {
         components.register::<RepositoriesService>();
         components.register::<RepositoriesRepository>();
+        components.register::<RepositoriesPreprocessor>();
     }
 }
