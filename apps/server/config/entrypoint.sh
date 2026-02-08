@@ -14,4 +14,4 @@ else
 fi
 
 echo "Starting..."
-cd apps/server && cargo watch -x run -w src -w config
+cd apps/server && cargo watch '-x run --bin server' -w src -w config

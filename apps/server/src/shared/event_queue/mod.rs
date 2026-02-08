@@ -1,15 +1,16 @@
+mod handler;
 mod subscriber;
 
 use crate::repositories::AnalyzeRepositoryData;
 use sword::prelude::*;
 use tokio::sync::mpsc;
 
+pub use handler::EventHandler;
 pub use subscriber::EventSubscriber;
 
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Event {
-    SendEmail,
     InitDocsGen(AnalyzeRepositoryData),
 }
 

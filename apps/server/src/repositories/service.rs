@@ -1,5 +1,5 @@
 use crate::{
-    repositories::{AnalyzeRepositoryDto, RepositoriesRepository, Repository, RepositoryError},
+    repositories::*,
     shared::{AppResult, Event, EventQueue},
     users::User,
 };
@@ -41,11 +41,9 @@ impl RepositoriesService {
         let repo = self.get_or_create(&owner.id, input).await?;
         let clone_path = self.clone_to_fs(&repo).await?;
 
-        tokio::join!(
-            self.event_queue.publish(Event::SendEmail),
-            self.event_queue
-                .publish(Event::InitDocsGen((repo.id, clone_path, owner.email)))
-        );
+        self.event_queue
+            .publish(Event::InitDocsGen((repo.id, clone_path, owner.email)))
+            .await;
 
         Ok(repo.id)
     }
@@ -80,7 +78,15 @@ impl RepositoriesService {
             ..
         } = repo;
 
-        let base_dir = PathBuf::from(&format!("{}/repo-{id}", self.config.clone_dir));
+        let base_dir = PathBuf::from(&format!("{}/{id}", self.config.clone_dir));
+
+        if base_dir.exists() {
+            tracing::info!("Removing existing repository directory: {:?}", base_dir);
+
+            fs::remove_dir_all(&base_dir)
+                .await
+                .map_err(RepositoryError::from)?;
+        }
 
         fs::create_dir_all(&base_dir)
             .await

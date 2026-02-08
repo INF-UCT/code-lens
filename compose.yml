@@ -21,6 +21,27 @@ services:
     volumes:
       - ./apps/server:/app/apps/server
       - server_target:/app/target
+      - ./data:/app/repos
+
+  code-lens-wiki:
+    container_name: code-lens-wiki
+    build:
+      context: .
+      dockerfile: ./apps/wiki/Dockerfile
+      target: dev
+    env_file:
+      - .env
+    ports:
+      - "3000"
+    networks:
+      - code-lens-network
+    volumes:
+      - ./apps/wiki:/app/apps/wiki:cached
+      - ./data:/app/repos
+      - /app/apps/wiki/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
 
   code-lens-nginx:
     container_name: code-lens-nginx

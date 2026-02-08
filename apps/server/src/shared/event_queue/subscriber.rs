@@ -1,52 +1,50 @@
+use crate::mailer::Mailer;
 use crate::shared::Event;
+use crate::shared::event_queue::EventHandler;
+
 use std::sync::Arc;
-use tokio::fs;
 use tokio::sync::{Mutex, mpsc::Receiver};
-use tokio::time;
 
 pub struct EventSubscriber {
     rx: Arc<Mutex<Receiver<Event>>>,
+    handler: Arc<EventHandler>,
 }
 
 impl EventSubscriber {
-    pub fn new(rx: Receiver<Event>) -> Self {
+    pub fn new(rx: Receiver<Event>, mailer: Mailer) -> Self {
+        let handler = EventHandler::builder().mailer(mailer).build();
+
         Self {
             rx: Arc::new(Mutex::new(rx)),
+            handler: Arc::new(handler),
         }
     }
 
-    pub fn handle_events(self) {
+    pub fn run(self) {
         tokio::spawn(async move {
-            while let Some(event) = self.rx.lock().await.recv().await {
-                self.handle_event(event);
+            if let Err(e) = self.subscribe().await {
+                tracing::error!("Error in event subscriber: {e}");
             }
         });
     }
 
-    fn handle_event(&self, event: Event) {
-        tokio::spawn(async move {
-            match event {
-                Event::SendEmail => tracing::info!("Handling email event"),
-                Event::InitDocsGen((repo_id, repo_path, _)) => {
-                    tracing::info!("Handling repo_id={}", repo_id.to_string());
-                    tracing::info!("Simulating documentation generation...");
+    pub async fn subscribe(&self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        while let Some(event) = self.rx.lock().await.recv().await {
+            let handler = Arc::clone(&self.handler);
 
-                    time::sleep(time::Duration::from_secs(5)).await;
+            tokio::spawn(async move {
+                Self::handle(Arc::clone(&handler), event.clone()).await;
+            });
+        }
 
-                    tracing::info!(
-                        "Removing cloned repository at {}",
-                        repo_path.to_str().unwrap_or_default()
-                    );
+        Ok(())
+    }
 
-                    fs::remove_dir_all(&repo_path).await.unwrap_or_else(|err| {
-                        tracing::error!(
-                            "Failed to remove directory {}: {}",
-                            repo_path.to_str().unwrap_or_default(),
-                            err
-                        )
-                    });
-                }
+    async fn handle(handler: Arc<EventHandler>, event: Event) {
+        match event {
+            Event::InitDocsGen(data) => {
+                handler.init_docs_generation(data.0, data.1, data.2).await;
             }
-        });
+        }
     }
 }

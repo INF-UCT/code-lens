@@ -1,5 +1,5 @@
 {
-	"name": "@inf-uct/code-lens",
+	"name": "@inf-uct/code-lens-wiki",
 	"version": "1.0.0",
 	"description": "CLI tool for Code Lens",
 	"main": "dist/index.js",
@@ -8,13 +8,12 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"start": "tsx src/main.ts",
-		"watch": "tsx src/main.ts",
+		"start": "tsx --clear-screen=false src/main.ts",
+		"watch": "tsx watch --clear-screen=false src/main.ts",
 		"format": "prettier --write . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
 		"format:check": "prettier --check . --config ../../.prettierrc.json --ignore-path ../../.prettierignore",
 		"lint": "eslint src --ext .ts",
-		"lint:fix": "eslint src --ext .ts --fix",
-		"prepublishOnly": "npm run build"
+		"lint:fix": "eslint src --ext .ts --fix"
 	},
 	"repository": {
 		"type": "git",
@@ -29,7 +28,8 @@
 	},
 	"homepage": "https://github.com/INF-UCT/code-lens-cli#readme",
 	"dependencies": {
-		"@clack/prompts": "^0.11.0"
+		"@hono/node-server": "^1.19.9",
+		"hono": "^4.11.9"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.15.0",
