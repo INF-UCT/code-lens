@@ -1,0 +1,222 @@
+Sistema distribuido para generar documentación técnica automática de proyectos de software a partir de su código fuente.
+
+El sistema debe estar compuesto por múltiples servicios desacoplados y debe ser escalable, seguro y extensible.
+
+────────────────────────────────
+1. ARQUITECTURA GENERAL
+────────────────────────────────
+
+El sistema se compone de:
+
+1) Servicio principal en Rust
+2) Servicio secundario "Wiki" en Node.js (TypeScript)
+3) Servidor LLM local usando vLLM (API compatible con OpenAI)
+4) MCP filesystem server
+5) Infraestructura Docker con volúmenes compartidos
+
+Todos los servicios corren en contenedores Docker separados.
+
+Se utilizan volúmenes compartidos para permitir acceso controlado al filesystem entre servicios.
+
+────────────────────────────────
+2. RESPONSABILIDADES DE CADA SERVICIO
+────────────────────────────────
+
+A) Servicio principal (Rust)
+
+Responsabilidades:
+
+- Clonar repositorios remotos.
+- Sanitizar el código:
+  - Aplicar ignore global.
+  - Eliminar archivos no deseados.
+  - Verificar tamaños máximos.
+  - Eliminar archivos binarios innecesarios.
+- Generar árbol completo del proyecto (usando ripgrep o equivalente).
+- Guardar el repositorio en un volumen compartido bajo:
+
+  /repos/{repo_id}
+
+- Emitir evento async interno.
+- Enviar HTTP POST al servicio Wiki con:
+
+{
+  "repo_id": "uuid",
+  "repo_path": "/repos/uuid",
+  "file_tree": "string con árbol completo"
+}
+
+El árbol enviado ya debe estar limpio y sanitizado.
+
+────────────────────────────────
+B) Servicio Wiki (Node.js + TypeScript)
+
+Responsabilidades:
+
+- Recibir solicitud POST.
+- Ejecutar pipeline de generación de documentación.
+- Comunicarse con:
+    - vLLM (OpenAI-compatible API)
+    - MCP filesystem
+- Generar documentación en múltiples fases.
+- Persistir archivos markdown en:
+
+  /wiki_output/{repo_id}/
+
+────────────────────────────────
+3. FLUJO FUNCIONAL
+────────────────────────────────
+
+FASE 1 — PLANIFICACIÓN DE SECCIONES
+
+Entrada:
+- repo_id
+- repo_path
+- file_tree (estructura completa del proyecto)
+
+Objetivo:
+- Analizar estructura del proyecto.
+- Detectar módulos, capas, servicios, componentes.
+- Proponer secciones de documentación.
+
+Salida esperada:
+
+{
+  "sections": [
+    {
+      "id": "uuid",
+      "title": "string",
+      "key_files": ["path/file.rs"]
+    }
+  ]
+}
+
+Consideraciones:
+- No generar documentación todavía.
+- Output estrictamente JSON.
+- Temperature baja para mayor determinismo.
+
+────────────────────────────────
+
+FASE 2 — GENERACIÓN POR SECCIÓN
+
+Para cada sección:
+
+Entrada:
+- repo_id
+- repo_path
+- file_tree
+- section (id, title, key_files)
+
+Objetivo:
+- Leer obligatoriamente los key_files usando MCP filesystem.
+- Leer archivos adicionales si es necesario.
+- Analizar código fuente.
+- Generar documentación en español en formato Markdown.
+
+La documentación debe incluir:
+- Descripción general
+- Responsabilidades
+- Componentes
+- Flujo
+- Relaciones
+- Decisiones de diseño
+
+Salida:
+- Markdown válido
+
+────────────────────────────────
+
+FASE 3 — PERSISTENCIA
+
+- Escribir cada sección en:
+  /wiki_output/{repo_id}/{orden}-{slug}.md
+- No sobrescribir accidentalmente repositorios distintos.
+- Garantizar aislamiento por repo_id.
+
+────────────────────────────────
+4. TECNOLOGÍAS A UTILIZAR
+────────────────────────────────
+
+Infraestructura:
+- Docker
+- Docker volumes compartidos
+
+Rust:
+- tokio
+- sistema interno de eventos async
+- ripgrep para árbol
+
+Node.js:
+- TypeScript
+- fastify (HTTP server)
+- openai SDK (conectando a vLLM)
+- @modelcontextprotocol/sdk
+- langchain (para agent + tool loop)
+- zod (validación de schema)
+- p-limit (control de concurrencia)
+
+LLM:
+- vLLM local
+- Modelo open-weight compatible con tool calling
+
+────────────────────────────────
+5. REQUISITOS NO FUNCIONALES
+────────────────────────────────
+
+- Seguridad del filesystem:
+    - MCP debe restringirse al root del repo.
+    - Evitar path traversal.
+- Manejo de proyectos grandes.
+- Control de tokens.
+- Control de concurrencia.
+- Soporte futuro multi-idioma.
+- Diseño extensible para nuevos MCPs.
+- Sistema idempotente por repo_id.
+- Manejo de reintentos.
+
+────────────────────────────────
+6. PUNTOS CRÍTICOS Y POSIBLES FALLOS
+────────────────────────────────
+
+1) Árbol demasiado grande:
+   - Puede consumir demasiados tokens.
+   - Solución: limitar profundidad o resumir.
+
+2) Archivos demasiado grandes:
+   - Puede romper contexto.
+   - Solución: chunking o límite de lectura.
+
+3) Modelo ignora key_files:
+   - Debe forzarse lectura obligatoria.
+
+4) Saturación de vLLM:
+   - Limitar concurrencia con p-limit.
+
+5) Repositorio mal estructurado:
+   - Modelo puede generar secciones incoherentes.
+   - Validar y revisar output.
+
+6) Output JSON inválido:
+   - Validar con Zod.
+   - Reintentar si falla.
+
+7) Seguridad:
+   - Nunca exponer filesystem completo.
+   - Nunca permitir rutas fuera del repo.
+
+8) Repositorios enormes:
+   - Implementar límite de tamaño total.
+
+────────────────────────────────
+7. OBJETIVO FINAL
+────────────────────────────────
+
+Construir un servicio desacoplado que:
+
+- Reciba un repositorio sanitizado.
+- Analice su estructura.
+- Genere documentación técnica estructurada en español.
+- Use MCP para leer archivos bajo demanda.
+- Use vLLM local para generación.
+- Sea escalable, seguro y extensible.

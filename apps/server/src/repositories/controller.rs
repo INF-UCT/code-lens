@@ -1,6 +1,5 @@
 use super::{AnalyzeRepositoryDto, RepositoriesService, RepositoryTokenCheck};
 use crate::{
-    shared::EventQueue,
     tokens::{TokenClaims, TokensRepository},
     users::UserRepository,
 };
@@ -9,7 +8,6 @@ use sword::prelude::*;
 
 #[controller("/repositories")]
 pub struct RepositoriesController {
-    event_queue: Arc<EventQueue>,
     service: Arc<RepositoriesService>,
     tokens_repository: Arc<TokensRepository>,
     users: Arc<UserRepository>,

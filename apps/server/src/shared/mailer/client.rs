@@ -1,11 +1,13 @@
-use crate::mailer::{Mail, MailerConfig, MailerError};
+use crate::shared::{AppResult, Mail, MailerConfig};
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor,
     message::{Mailbox, header::ContentType},
     transport::smtp::authentication::Credentials,
 };
 
-#[derive(Clone)]
+use sword::prelude::*;
+
+#[injectable(provider)]
 pub struct Mailer {
     config: MailerConfig,
     client: AsyncSmtpTransport<Tokio1Executor>,
@@ -25,7 +27,7 @@ impl Mailer {
         Self { client, config }
     }
 
-    pub async fn send(&self, mail: Mail) -> Result<(), MailerError> {
+    pub async fn send(&self, mail: Mail) -> AppResult<()> {
         let email_from_fmt = format!("Code Lens <{}>", self.config.smtp_username);
 
         let from = email_from_fmt

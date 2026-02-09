@@ -38,3 +38,7 @@ smtp_host = "${SMTP_HOST}"
 smtp_port = "${SMTP_PORT}"
 smtp_username = "${SMTP_USERNAME}"
 smtp_password = "${SMTP_PASSWORD}"
+
+[wiki]
+api_key = "${WIKI_SERVICE_API_KEY}"
+service_url = "${WIKI_SERVICE_URL}"

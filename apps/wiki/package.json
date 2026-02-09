@@ -29,7 +29,12 @@
 	"homepage": "https://github.com/INF-UCT/code-lens-cli#readme",
 	"dependencies": {
 		"@hono/node-server": "^1.19.9",
-		"hono": "^4.11.9"
+		"@langchain/openai": "^1.2.5",
+		"@modelcontextprotocol/sdk": "^1.26.0",
+		"hono": "^4.11.9",
+		"langchain": "^1.2.18",
+		"openai": "^6.18.0",
+		"valibot": "^1.2.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.15.0",

@@ -5,6 +5,10 @@ use sqlx::Error as SqlxError;
 use sword::prelude::*;
 use thiserror::Error;
 
+use lettre::{
+    address::AddressError, error::Error as LettreError, transport::smtp::Error as SmtpError,
+};
+
 pub type AppResult<T = JsonResponse> = Result<T, AppError>;
 
 #[derive(Debug, Error, HttpError)]
@@ -57,4 +61,27 @@ pub enum AppError {
     #[tracing(error)]
     #[error("Clone error: {0}")]
     Clone(#[from] RepositoryError),
+
+    #[http(code = 500)]
+    #[tracing(error)]
+    #[error("SMTP transport error: {0}")]
+    SmtpTransport(#[from] SmtpError),
+
+    #[http(code = 400)]
+    #[tracing(error)]
+    #[error("Email address error: {0}")]
+    Address(#[from] AddressError),
+
+    #[http(code = 500)]
+    #[tracing(error)]
+    #[error("Message building error: {0}")]
+    MessageBuild(#[from] LettreError),
+
+    #[http(
+        code = 500,
+        message = "Failed to communicate with wiki service. Please try again, or contact support."
+    )]
+    #[tracing(error)]
+    #[error("Wiki service error: {0}")]
+    WikiService(String),
 }
