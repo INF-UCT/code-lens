@@ -64,19 +64,12 @@ impl RepositoriesService {
         };
 
         let clone_path_str = clone_path.to_str().unwrap_or_default().to_string();
-        let repository_tree = self.generate_repository_tree(&repo).await?;
-
-        tracing::debug!(
-            "Repository tree for {} ({} files):\n{}",
-            repo.name,
-            repository_tree.lines().count(),
-            repository_tree
-        );
+        let repository_trees = self.generate_trees(&clone_path).await?;
 
         tokio::try_join!(
             self.mailer.send(mail),
             self.wiki_client
-                .request_docs_gen(&repo.id, clone_path_str, repository_tree)
+                .request_docs_gen(&repo.id, clone_path_str, repository_trees)
         )?;
 
         Ok(repo.id)
@@ -115,7 +108,7 @@ impl RepositoriesService {
         let base_dir = PathBuf::from(&format!("{}/{id}", self.config.clone_dir));
 
         if base_dir.exists() {
-            tracing::info!("Removing existing repository directory: {:?}", base_dir);
+            tracing::info!("Removing existing repository directory: {base_dir:?}");
 
             fs::remove_dir_all(&base_dir)
                 .await
@@ -143,49 +136,47 @@ impl RepositoriesService {
         Ok(base_dir)
     }
 
-    async fn generate_repository_tree(&self, repo: &Repository) -> AppResult<String> {
-        tracing::info!("Generating repository tree for {}", repo.name);
+    async fn generate_flat_tree(&self, repo_dir_path: &Path) -> AppResult<String> {
+        let command = "rg --files --hidden --no-ignore | sort";
 
-        let repository_dir = Path::new(&self.config.clone_dir).join(repo.id.to_string());
+        self.run_tree_command(&command, repo_dir_path).await
+    }
 
-        // rg --files \
-        //   --hidden \
-        //   --no-ignore \
-        //   --ignore-file scripts/llm.rgignore \
-        //   --glob '!.git' \
-        //   | sort
+    async fn generate_repo_hierarchy_tree(&self, repo_dir_path: &Path) -> AppResult<String> {
+        let command = "tree -a -N --noreport --dirsfirst \
+            | tail -n +2 \
+            | sed 's/[├└]── /  /g; s/│/  /g'";
 
-        let command = format!(
-            "rg --files --hidden --no-ignore --ignore-file {} --glob '!.git' | sort",
-            self.config.rignore_file_path
-        );
+        self.run_tree_command(&command, repo_dir_path).await
+    }
 
+    async fn generate_trees(&self, repo_dir: &Path) -> AppResult<(String, String)> {
+        tracing::info!("Generating repository trees for {}", repo_dir.display());
+
+        tokio::try_join!(
+            self.generate_flat_tree(repo_dir),
+            self.generate_repo_hierarchy_tree(repo_dir)
+        )
+    }
+
+    async fn run_tree_command(&self, command: &str, repo_dir_path: &Path) -> AppResult<String> {
         let output = Command::new("sh")
             .arg("-c")
-            .arg(&command)
-            .current_dir(&repository_dir)
+            .arg(command)
+            .current_dir(&repo_dir_path)
             .output()
             .await
             .map_err(RepositoryError::from)?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            tracing::error!("Failed to generate repository tree: {}", stderr);
+            tracing::error!("Failed to run command `{command}`: {stderr}");
+
             return Err(RepositoryError::Sanitization(format!(
-                "Failed to generate repository tree: {}",
-                stderr
-            ))
-            .into());
+                "Failed to run command `{command}`: {stderr}",
+            )))?;
         }
 
-        let tree = String::from_utf8_lossy(&output.stdout).to_string();
-
-        if tree.is_empty() {
-            tracing::warn!("Generated repository tree is empty for {}", repo.name);
-        } else {
-            tracing::debug!("Generated repository tree with {} bytes", tree.len());
-        }
-
-        Ok(tree)
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 }

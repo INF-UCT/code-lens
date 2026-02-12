@@ -31,10 +31,9 @@ services:
       target: dev
     env_file:
       - .env
-    ports:
-      - "3000"
-    networks:
-      - code-lens-network
+    network_mode: "service:code-lens-server"
+    depends_on:
+      - code-lens-server
     volumes:
       - ./apps/wiki:/app/apps/wiki:cached
       - ./data:/app/repos

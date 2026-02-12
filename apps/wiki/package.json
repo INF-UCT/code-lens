@@ -28,8 +28,9 @@
 	},
 	"homepage": "https://github.com/INF-UCT/code-lens-cli#readme",
 	"dependencies": {
+		"@ghaerdi/rustify": "^2.0.0",
 		"@hono/node-server": "^1.19.9",
-		"@langchain/openai": "^1.2.5",
+		"@langchain/openai": "^1.2.7",
 		"@modelcontextprotocol/sdk": "^1.26.0",
 		"hono": "^4.11.9",
 		"langchain": "^1.2.18",

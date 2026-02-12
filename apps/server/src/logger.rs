@@ -16,7 +16,7 @@ pub fn LoggerLayer() -> TraceLayer<
     tracing_subscriber::fmt()
         .with_target(false)
         .with_span_events(fmt::format::FmtSpan::NONE)
-        .with_max_level(tracing::Level::DEBUG)
+        .with_max_level(tracing::Level::WARN)
         .compact()
         .without_time()
         .init();

@@ -109,6 +109,7 @@ impl RepositoriesPreprocessor {
                 continue;
             };
 
+            tracing::debug!("Adding ignore pattern: '{line}'");
             builder.add(glob);
         }
 
@@ -120,6 +121,7 @@ impl RepositoriesPreprocessor {
         repo_path: &Path,
         patterns: &GlobSet,
     ) -> Result<(), RepositoryError> {
+        let mut paths_to_remove = Vec::new();
         let mut entries = WalkDir::new(repo_path);
 
         while let Some(entry) = entries.next().await {
@@ -128,11 +130,23 @@ impl RepositoriesPreprocessor {
             })?;
 
             let path = entry.path();
+
+            if path == repo_path {
+                continue;
+            }
+
             let should_remove = self.should_ignore_path(repo_path, &path, patterns);
 
             if should_remove {
-                self.remove_path(&path).await?;
+                paths_to_remove.push(path.to_path_buf());
             }
+        }
+
+        paths_to_remove.reverse();
+
+        for path in paths_to_remove {
+            tracing::debug!("Removing ignored path: {}", path.display());
+            self.remove_path(&path).await?;
         }
 
         Ok(())
@@ -140,15 +154,24 @@ impl RepositoriesPreprocessor {
 
     fn should_ignore_path(&self, repo_root: &Path, path: &Path, patterns: &GlobSet) -> bool {
         if let Ok(relative_path) = path.strip_prefix(repo_root) {
-            return patterns.is_match(relative_path);
+            if patterns.is_match(relative_path) {
+                tracing::debug!("Pattern match for path: {}", relative_path.display());
+                return true;
+            }
+
+            let path_str = relative_path.to_string_lossy();
+
+            let with_slash = format!("{}/", path_str);
+            if patterns.is_match(with_slash.as_str()) {
+                tracing::debug!("Pattern match for path with slash: {}", path_str);
+                return true;
+            }
         }
 
         false
     }
 
     async fn remove_path(&self, path: &Path) -> Result<(), RepositoryError> {
-        tracing::debug!("Removing ignored path: {}", path.display());
-
         let metadata = fs::metadata(path).await.map_err(|e| {
             RepositoryError::Sanitization(format!(
                 "Failed to get metadata for '{}': {e}",

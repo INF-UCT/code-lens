@@ -1,10 +1,10 @@
+use crate::shared::AppResult;
+use crate::shared::errors::AppError;
+
 use serde::Deserialize;
 use serde_json::json;
 use sword::prelude::*;
 use uuid::Uuid;
-
-use crate::shared::AppResult;
-use crate::shared::errors::AppError;
 
 #[derive(Debug, Clone, Deserialize)]
 #[config(key = "wiki")]
@@ -31,14 +31,15 @@ impl WikiClient {
         &self,
         repository_id: &Uuid,
         repository_clone_path: String,
-        repository_tree: String,
+        repository_trees: (String, String),
     ) -> AppResult<()> {
         let url = format!("{}/docs-gen", self.config.service_url);
 
         let body = json!({
             "repo_id": repository_id.to_string(),
             "repo_path": repository_clone_path,
-            "file_tree": repository_tree,
+            "flat_tree": repository_trees.0,
+            "hierarchy_tree": repository_trees.1,
         });
 
         let response = self
