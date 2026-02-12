@@ -1,10 +1,9 @@
-import * as v from "valibot"
-
-import env from "./env"
+import env from "@/env"
 import type { Context, Next } from "hono"
 
 import { Hono } from "hono"
-import { DocGenerationDto, DocGenerationInput } from "./schemas/api.schema"
+import { plannerAgent } from "@/agents/planner"
+import { DocGenerationDto, DocGenerationInput } from "@/schemas/api.schema"
 
 const app = new Hono()
 
@@ -26,15 +25,15 @@ const apiKeyAuth = async (c: Context, next: Next) => {
 
 app.post("/docs-gen", apiKeyAuth, async c => {
 	const body = await c.req.json<DocGenerationInput>()
-	await v.parseAsync(DocGenerationDto, body)
+	await DocGenerationDto.parseAsync(body)
 
-	console.log("Repo ID:", body.repo_id)
-	console.log("Repo Path:", body.repo_path)
-	console.log(`Flat Tree Length: \n ${body.flat_tree}\n`)
-	console.log(`Hierarchy Tree Length: \n ${body.hierarchy_tree}\n`)
+	console.log("Repo ID:", body.repoId)
+	console.log("Repo Path:", body.repoPath)
+
+	await plannerAgent.run(body)
 
 	return c.json({
-		repo_id: body.repo_id,
+		repo_id: body.repoId,
 		message: "Documentation generation request received",
 	})
 })

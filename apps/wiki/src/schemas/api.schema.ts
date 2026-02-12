@@ -1,10 +1,10 @@
-import * as v from "valibot"
+import * as z from "zod"
 
-export const DocGenerationDto = v.object({
-	repo_id: v.pipe(v.string(), v.nonEmpty(), v.uuid()),
-	repo_path: v.pipe(v.string(), v.nonEmpty()),
-	hierarchy_tree: v.pipe(v.string(), v.nonEmpty()),
-	flat_tree: v.pipe(v.string(), v.nonEmpty()),
+export const DocGenerationDto = z.object({
+	repoId: z.uuid({ version: "v4" }),
+	repoPath: z.string().nonempty(),
+	hierarchyTree: z.string().nonempty(),
+	flatTree: z.string().nonempty(),
 })
 
-export type DocGenerationInput = v.InferOutput<typeof DocGenerationDto>
+export type DocGenerationInput = z.infer<typeof DocGenerationDto>

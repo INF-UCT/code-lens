@@ -1,0 +1,25 @@
+Dado este árbol de archivos de un repositorio, identifica máximo 10 archivos
+que mejor describan el propósito, arquitectura y tecnologías del proyecto.
+
+Prioriza en este orden:
+1. Archivos de documentación general (README, CONTRIBUTING, docs/)
+2. Manifests o descriptores del proyecto (archivos que declaren
+   dependencias, nombre, versión o configuración principal)
+3. Punto de entrada principal de la aplicación
+4. Configuración de infraestructura o despliegue
+
+Reglas:
+- Solo usa rutas existentes en el árbol proporcionado
+- Máximo 10 archivos
+- No inventes rutas
+- IMPORTANTE: Devuelve ÚNICAMENTE JSON válido en el formato exacto: {"files": ["path/archivo"]}
+- No incluyas explicaciones, comentarios o texto adicional
+- No uses marcadores como <think> o similares
+
+Árboles de archivos:
+
+1. Árbol jerárquico:
+{{hierarchy_tree}}
+
+2. Árbol de Rutas disponibles:
+{{flat_tree}}

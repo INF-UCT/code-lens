@@ -50,7 +50,7 @@ impl From<(&Uuid, &AnalyzeRepositoryDto)> for Repository {
 }
 
 fn validate_branch(branch: &str) -> Result<(), ValidationError> {
-    if branch != "main" && branch != "master" {
+    if branch != "main" && branch != "master" && branch != "development" {
         return Err(ValidationError {
             code: "branch".into(),
             message: Some("Branch must be 'main' or 'master'".into()),

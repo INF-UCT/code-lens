@@ -36,10 +36,10 @@ impl WikiClient {
         let url = format!("{}/docs-gen", self.config.service_url);
 
         let body = json!({
-            "repo_id": repository_id.to_string(),
-            "repo_path": repository_clone_path,
-            "flat_tree": repository_trees.0,
-            "hierarchy_tree": repository_trees.1,
+            "repoId": repository_id.to_string(),
+            "repoPath": repository_clone_path,
+            "flatTree": repository_trees.0,
+            "hierarchyTree": repository_trees.1,
         });
 
         let response = self

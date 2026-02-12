@@ -1,14 +1,28 @@
-import * as v from "valibot"
+import * as z from "zod"
 
-export const SectionSchema = v.object({
-	id: v.pipe(v.string(), v.nonEmpty(), v.uuid()),
-	title: v.pipe(v.string(), v.nonEmpty()),
-	keyFiles: v.array(v.pipe(v.string(), v.nonEmpty())),
+export const SectionSchema = z.object({
+	title: z.string().nonempty(),
+	keyFiles: z.array(z.string().nonempty()),
+	tinySummary: z.string().nonempty(),
 })
 
-export type Section = v.InferOutput<typeof SectionSchema>
+export const SectionsGenSchema = z.object({
+	sections: z.array(SectionSchema),
+})
 
-export interface SectionPlan {
-	repo_id: string
-	sections: Section[]
-}
+export type Section = z.infer<typeof SectionSchema>
+
+export const SelectFilesSchema = z.object({
+	files: z
+		.array(z.string())
+		.max(10)
+		.describe("Array de hasta 10 archivos seleccionados"),
+})
+
+export type SelectFilesOutput = z.infer<typeof SelectFilesSchema>
+
+export const SummaryGenSchema = z.object({
+	summary: z.string().nonempty(),
+})
+
+export type SummaryGenOutput = z.infer<typeof SummaryGenSchema>
