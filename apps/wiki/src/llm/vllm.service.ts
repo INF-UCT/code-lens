@@ -6,6 +6,7 @@ import { Result } from "@ghaerdi/rustify"
 class VLLMService {
 	public availableModels: Record<string, string> = {
 		QWEN_3_4B: "Qwen/Qwen3-4B",
+		DEEPSEEK: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
 	}
 
 	public getBaseURL(): string {

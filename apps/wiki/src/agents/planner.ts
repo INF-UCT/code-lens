@@ -13,6 +13,8 @@ import {
 
 class PlannerAgent {
 	public async run(input: DocGenerationInput) {
+		console.log("Starting planner agent with input:", input)
+
 		const selectedFiles = await this.selectSummaryFiles(input)
 		const summary = await this.writeSummary(input.repoPath, selectedFiles)
 

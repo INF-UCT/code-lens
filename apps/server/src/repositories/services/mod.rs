@@ -153,10 +153,18 @@ impl RepositoriesService {
     async fn generate_trees(&self, repo_dir: &Path) -> AppResult<(String, String)> {
         tracing::info!("Generating repository trees for {}", repo_dir.display());
 
-        tokio::try_join!(
-            self.generate_flat_tree(repo_dir),
-            self.generate_repo_hierarchy_tree(repo_dir)
-        )
+        let flat_tree = self.generate_flat_tree(repo_dir).await?;
+
+        tracing::info!("Completed generating flat tree for {}", repo_dir.display());
+
+        let hierarchy_tree = self.generate_repo_hierarchy_tree(repo_dir).await?;
+
+        tracing::info!(
+            "Completed generating hierarchy tree for {}",
+            repo_dir.display()
+        );
+
+        Ok((flat_tree, hierarchy_tree))
     }
 
     async fn run_tree_command(&self, command: &str, repo_dir_path: &Path) -> AppResult<String> {

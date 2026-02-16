@@ -86,7 +86,7 @@ impl RepositoriesPreprocessor {
     ) -> Result<(), RepositoryError> {
         let content = match fs::read_to_string(path).await {
             Ok(content) => content,
-            Err(e) if !required => {
+            Err(_) if !required => {
                 tracing::debug!("Optional ignore file '{path}' not found or unreadable",);
                 return Ok(());
             }

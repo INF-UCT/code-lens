@@ -1,11 +1,10 @@
-import * as v from "valibot"
+import * as z from "zod"
 
-const schema = v.object({
-	VLLM_URL: v.pipe(v.string(), v.nonEmpty("VLLM_URL env var is required")),
-	WIKI_SERVICE_API_KEY: v.pipe(
-		v.string(),
-		v.nonEmpty("WIKI_SERVICE_API_KEY env var is required")
-	),
+const schema = z.object({
+	VLLM_URL: z.string().nonempty("VLLM_URL env var is required"),
+	WIKI_SERVICE_API_KEY: z
+		.string()
+		.nonempty("WIKI_SERVICE_API_KEY env var is required"),
 })
 
-export default v.parse(schema, process.env)
+export default schema.parse(process.env)
