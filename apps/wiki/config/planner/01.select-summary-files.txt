@@ -1,4 +1,4 @@
-Dado este árbol de archivos de un repositorio, identifica máximo 10 archivos
+Dado este árbol de archivos de un repositorio, identifica EXACTAMENTE entre 5 y 10 archivos ÚNICOS
 que mejor describan el propósito, arquitectura y tecnologías del proyecto.
 
 Prioriza en este orden:
@@ -8,13 +8,22 @@ Prioriza en este orden:
 3. Punto de entrada principal de la aplicación
 4. Configuración de infraestructura o despliegue
 
-Reglas:
+Reglas CRÍTICAS:
 - Solo usa rutas existentes en el árbol proporcionado
-- Máximo 10 archivos
+- MÁXIMO 10 archivos ÚNICOS (sin repetir ningún archivo)
+- NO REPITAS archivos en la lista
+- Cada archivo debe aparecer UNA SOLA VEZ
 - No inventes rutas
-- IMPORTANTE: Devuelve ÚNICAMENTE JSON válido en el formato exacto: {"files": ["path/archivo"]}
+- IMPORTANTE: Devuelve ÚNICAMENTE JSON válido en el formato EXACTO: {"files": ["path/archivo"]}
 - No incluyas explicaciones, comentarios o texto adicional
 - No uses marcadores como <think> o similares
+- La respuesta debe ser CORTA y CONCISA
+
+Ejemplo de respuesta CORRECTA:
+{"files": ["README.md", "package.json", "src/main.ts"]}
+
+Ejemplo de respuesta INCORRECTA (NO HACER):
+{"files": ["README.md", "README.md", "package.json"]} ❌ (archivo repetido)
 
 Árboles de archivos:
 
