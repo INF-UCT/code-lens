@@ -1,34 +1,21 @@
-Dado este árbol de archivos de un repositorio, identifica EXACTAMENTE entre 5 y 10 archivos ÚNICOS
-que mejor describan el propósito, arquitectura y tecnologías del proyecto.
+OUTPUT ONLY VALID JSON. NO EXPLANATIONS. NO CONVERSATIONAL TEXT.
 
-Prioriza en este orden:
-1. Archivos de documentación general (README, CONTRIBUTING, docs/)
-2. Manifests o descriptores del proyecto (archivos que declaren
-   dependencias, nombre, versión o configuración principal)
-3. Punto de entrada principal de la aplicación
-4. Configuración de infraestructura o despliegue
+Task: Select 5-10 most important files from the repository below.
 
-Reglas CRÍTICAS:
-- Solo usa rutas existentes en el árbol proporcionado
-- MÁXIMO 10 archivos ÚNICOS (sin repetir ningún archivo)
-- NO REPITAS archivos en la lista
-- Cada archivo debe aparecer UNA SOLA VEZ
-- No inventes rutas
-- IMPORTANTE: Devuelve ÚNICAMENTE JSON válido en el formato EXACTO: {"files": ["path/archivo"]}
-- No incluyas explicaciones, comentarios o texto adicional
-- No uses marcadores como <think> o similares
-- La respuesta debe ser CORTA y CONCISA
+Rules:
+1. Use EXACT paths from the list ("backend/package.json" not "package.json")
+2. NO trailing commas in JSON
+3. Start your response with { immediately
 
-Ejemplo de respuesta CORRECTA:
-{"files": ["README.md", "package.json", "src/main.ts"]}
+Priority:
+1. README files
+2. Config files (package.json, Cargo.toml, go.mod)
+3. Entry points (main.*, index.*, app.*)
+4. Docker/CI files
+5. Core source files
 
-Ejemplo de respuesta INCORRECTA (NO HACER):
-{"files": ["README.md", "README.md", "package.json"]} ❌ (archivo repetido)
-
-Árboles de archivos:
-
-1. Árbol jerárquico:
-{{hierarchy_tree}}
-
-2. Árbol de Rutas disponibles:
+Available files:
 {{flat_tree}}
+
+Output format (start with {):
+{"files": ["path1", "path2", "path3"]}

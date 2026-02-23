@@ -10,9 +10,12 @@ export class LLMFactory {
 	static createFileSelectorModel() {
 		return new ChatOpenAI({
 			modelName: vllmService.availableModels.DEEPSEEK,
-			temperature: 0, // Completamente determinístico
+			temperature: 0, // Completamente determinístico - no conversación
 			apiKey: "dummy",
-			maxTokens: 500, // MUY limitado para forzar respuestas cortas
+			maxTokens: 500, // Suficiente para array de 10 rutas
+			frequencyPenalty: 0, // Sin penalizaciones que generen creatividad
+			presencePenalty: 0,
+			topP: 0.1, // Muy bajo - fuerza tokens más probables
 			configuration: {
 				baseURL: vllmService.getBaseURL(),
 			},
@@ -26,9 +29,12 @@ export class LLMFactory {
 	static createPlannerModel() {
 		return new ChatOpenAI({
 			modelName: vllmService.availableModels.DEEPSEEK,
-			temperature: 0, // Más determinístico para JSON
+			temperature: 0, // Completamente determinístico
 			apiKey: "dummy",
-			maxTokens: 800, // Reducido para forzar respuestas más cortas
+			maxTokens: 800, // Más tokens para summary completo
+			frequencyPenalty: 0,
+			presencePenalty: 0,
+			topP: 0.1, // Muy bajo - fuerza tokens más probables
 			configuration: {
 				baseURL: vllmService.getBaseURL(),
 			},
@@ -44,7 +50,8 @@ export class LLMFactory {
 			modelName: vllmService.availableModels.DEEPSEEK,
 			temperature: 0,
 			apiKey: "dummy",
-			maxTokens: 2000, // Más tokens para generar múltiples secciones
+			maxTokens: 1500, // Reducido de 2000 - evita respuestas enormes
+			topP: 0.1,
 			configuration: {
 				baseURL: vllmService.getBaseURL(),
 			},

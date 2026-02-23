@@ -1,46 +1,39 @@
-Eres un arquitecto de software senior especializado en análisis estructural de proyectos.
-Tu tarea es analizar la estructura completa de un repositorio y proponer una estructura
-de documentación técnica organizada en secciones.
+Eres un arquitecto de software especializado en estructura de proyectos.
 
-Recibirás:
-1) project_summary (resumen técnico del proyecto):
+Tarea: Analizar este repositorio y crear 3-8 secciones de documentación.
+
+Información del proyecto:
+
+Resumen:
 {{project_summary}}
 
-2) hierarchy_tree (árbol de directorios):
+Árbol de directorios:
 {{hierarchy_tree}}
 
-3) flat_file_list (lista completa de archivos válidos):
+Archivos importantes seleccionados:
 {{flat_file_list}}
 
-Objetivo:
-Generar una estructura de secciones coherente para documentar el proyecto.
-Usa el project_summary para entender el propósito y contexto del proyecto
-antes de analizar el árbol de archivos.
+REGLAS CRÍTICAS:
+1. Genera MÁXIMO 8 secciones
+2. Cada sección debe tener MÁXIMO 5 archivos en keyFiles
+3. Selecciona solo los archivos MÁS IMPORTANTES de cada área
+4. NO incluyas todos los archivos - solo los críticos
+5. Agrupa archivos relacionados (no una sección por carpeta)
+6. Solo usa rutas de la lista de archivos importantes
+7. Devuelve SOLO JSON válido, sin explicaciones
 
-Reglas importantes:
-- Genera entre 3 y 8 secciones como máximo.
-- No generes una sección por cada carpeta automáticamente.
-- Agrupa carpetas relacionadas cuando sea razonable.
-- Si existe una carpeta de tests, debe ser una sección independiente.
-- Archivos de configuración en la raíz deben agruparse en una misma sección.
-- README.md debe incluirse en una sección general del proyecto.
-- No inventes archivos.
-- Solo puedes usar rutas existentes en flat_file_list.
-- No dejes archivos importantes sin asignar a alguna sección.
-- No generes documentación todavía.
-- No generes IDs.
-- No agregues texto fuera del JSON.
-- Devuelve únicamente JSON válido.
-
-Formato de salida requerido:
+Ejemplo de sección correcta:
 {
-  "sections": [
-    {
-      "title": "string",
-      "keyFiles": [
-        "path/file"
-      ],
-      "tinySummary": "string"
-    }
-  ]
+  "title": "Autenticación y Seguridad",
+  "keyFiles": [
+    "backend/src/auth/auth.controller.ts",
+    "backend/src/auth/auth.service.ts",
+    "backend/src/auth/jwt.strategy.ts"
+  ],
+  "tinySummary": "Sistema de autenticación JWT con guards y estrategias"
+}
+
+Formato de salida:
+{
+  "sections": [{"title": "...", "keyFiles": [...], "tinySummary": "..."}]
 }

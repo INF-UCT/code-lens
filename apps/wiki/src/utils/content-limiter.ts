@@ -157,4 +157,70 @@ export class ContentLimiter {
 
 		return batches
 	}
+
+	/**
+	 * Analiza el tamaño del repositorio y retorna límites adaptativos
+	 */
+	static getAdaptiveLimits(fileCount: number): ContentLimits {
+		// Repositorio pequeño (<50 archivos)
+		if (fileCount < 50) {
+			return {
+				maxCharsPerFile: 15000, // ~3750 tokens
+				maxTotalChars: 80000, // ~20000 tokens
+				maxFiles: 15,
+			}
+		}
+
+		// Repositorio mediano (50-200 archivos)
+		if (fileCount < 200) {
+			return {
+				maxCharsPerFile: 10000, // ~2500 tokens
+				maxTotalChars: 60000, // ~15000 tokens
+				maxFiles: 12,
+			}
+		}
+
+		// Repositorio grande (200-500 archivos)
+		if (fileCount < 500) {
+			return {
+				maxCharsPerFile: 8000, // ~2000 tokens
+				maxTotalChars: 50000, // ~12500 tokens
+				maxFiles: 10,
+			}
+		}
+
+		// Repositorio muy grande (500+ archivos)
+		return {
+			maxCharsPerFile: 5000, // ~1250 tokens
+			maxTotalChars: 40000, // ~10000 tokens
+			maxFiles: 8,
+		}
+	}
+
+	/**
+	 * Detecta el tipo de proyecto basado en archivos clave
+	 */
+	static detectProjectType(files: string[]): string {
+		const fileList = files.map(f => f.toLowerCase())
+
+		// Buscar archivos que terminen con estos nombres (maneja subdirectorios)
+		if (fileList.some(f => f.endsWith("package.json"))) return "javascript"
+		if (
+			fileList.some(f => f.endsWith("pyproject.toml")) ||
+			fileList.some(f => f.endsWith("requirements.txt"))
+		)
+			return "python"
+		if (fileList.some(f => f.endsWith("cargo.toml"))) return "rust"
+		if (fileList.some(f => f.endsWith("go.mod"))) return "go"
+		if (fileList.some(f => f.endsWith("composer.json"))) return "php"
+		if (
+			fileList.some(f => f.endsWith("pom.xml")) ||
+			fileList.some(f => f.endsWith("build.gradle"))
+		)
+			return "java"
+		if (fileList.some(f => f.endsWith(".csproj") || f.endsWith(".sln")))
+			return "csharp"
+
+		return "unknown"
+	}
 }
