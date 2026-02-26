@@ -32,12 +32,12 @@ impl Mailer {
 
         let from = email_from_fmt
             .parse::<Mailbox>()
-            .inspect_err(|e| tracing::error!("Failed to parse sender email address: {}", e))?;
+            .inspect_err(|e| tracing::error!("Failed to parse sender email address: {e}"))?;
 
         let to = mail
             .to
             .parse::<Mailbox>()
-            .inspect_err(|e| tracing::error!("Failed to parse recipient email address: {}", e))?;
+            .inspect_err(|e| tracing::error!("Failed to parse recipient email address: {e}"))?;
 
         let message = Message::builder()
             .from(from)
@@ -45,10 +45,10 @@ impl Mailer {
             .subject(mail.subject)
             .header(ContentType::TEXT_HTML)
             .body(mail.html.clone())
-            .inspect_err(|e| tracing::error!("Failed to build email message: {}", e))?;
+            .inspect_err(|e| tracing::error!("Failed to build email message: {e}"))?;
 
         self.client.send(message).await.inspect_err(|e| {
-            tracing::error!("Failed to send email: {}", e);
+            tracing::error!("Failed to send email: {e}");
         })?;
 
         Ok(())

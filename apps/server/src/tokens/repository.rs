@@ -2,9 +2,18 @@ use crate::{
     shared::{AppResult, Database},
     tokens::Token,
 };
+use chrono::Utc;
 use std::sync::Arc;
 use sword::prelude::*;
 use uuid::Uuid;
+
+#[derive(Clone, Debug, sqlx::FromRow)]
+#[allow(dead_code)]
+pub struct RevokedToken {
+    pub id: Uuid,
+    pub token_hash: String,
+    pub revoked_at: chrono::DateTime<Utc>,
+}
 
 #[injectable]
 pub struct TokensRepository {
@@ -44,5 +53,25 @@ impl TokensRepository {
             .await?;
 
         Ok(tokens)
+    }
+
+    pub async fn is_token_revoked(&self, token_hash: &str) -> AppResult<bool> {
+        let result = sqlx::query_as::<_, RevokedToken>(
+            "SELECT * FROM revoked_tokens WHERE token_hash = $1",
+        )
+        .bind(token_hash)
+        .fetch_optional(self.database.get_pool())
+        .await?;
+
+        Ok(result.is_some())
+    }
+
+    pub async fn revoke_token(&self, token_hash: &str) -> AppResult<()> {
+        sqlx::query("INSERT INTO revoked_tokens (token_hash) VALUES ($1)")
+            .bind(token_hash)
+            .execute(self.database.get_pool())
+            .await?;
+
+        Ok(())
     }
 }

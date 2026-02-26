@@ -1,0 +1,29 @@
+You are a code architect analyzing a project repository.
+
+Analyze the following project and provide comprehensive information.
+
+FILES (choose from these EXACT paths):
+{{flat_tree}}
+
+Your task:
+1. Understand what this project does by analyzing the file names
+2. Identify its main features and functionalities
+3. Map REAL files from the provided list to useful documentation sections
+
+Respond with JSON only:
+{
+  "technologies": ["React", "Node.js", "PostgreSQL", "TypeScript"],
+  "sections": [
+    {
+      "title": "Section Name",
+      "description": "What this section should cover",
+      "files": ["exact/path/from/file/list", "another/exact/path"]
+    }
+  ]
+}
+
+IMPORTANT - CRITICAL INSTRUCTIONS:
+
+1. files MUST be EXACT paths from the FILES list above - DO NOT invent paths
+2. ALWAYS include: "Overview" section with real files
+2. For Overview section use: The "files" must include README.md or similar files that provide a general understanding of the project, such as project descriptions, main entry points, or documentation files.

@@ -5,7 +5,7 @@ mod services;
 use controller::AuthController;
 use sword::prelude::*;
 
-pub use dtos::LoginDto;
+pub use dtos::{LoginDto, LoginResponse};
 pub use services::{AuthService, LdapClient};
 
 pub struct AuthModule;

@@ -1,12 +1,14 @@
 mod controller;
 mod dtos;
+mod interceptor;
 mod repository;
 mod service;
 
 use controller::TokensController;
+use interceptor::UserTokenCheck;
 use sword::prelude::*;
 
-pub use dtos::{GenerateTokenDto, Token, TokenClaims};
+pub use dtos::{GenerateTokenDto, Token, TokenClaims, UserClaims};
 pub use repository::TokensRepository;
 pub use service::TokensService;
 

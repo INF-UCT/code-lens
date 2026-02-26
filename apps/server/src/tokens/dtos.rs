@@ -13,9 +13,16 @@ pub struct Token {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct TokenClaims {
     pub id: Uuid,
+    pub exp: i64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct UserClaims {
+    pub user_id: Uuid,
+    pub username: String,
     pub exp: i64,
 }
 

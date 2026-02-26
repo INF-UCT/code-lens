@@ -1,6 +1,7 @@
 import process from "node:process"
 import list from "@/commands/list"
 import login from "@/commands/login"
+import logout from "@/commands/logout"
 import generate from "@/commands/generate"
 
 import { state } from "@/state"
@@ -46,13 +47,7 @@ const command_selection = async () => {
 	const opts = [
 		{ label: "Generate new Code Lens Token for your project", value: generate },
 		{ label: "List active Code Lens Tokens", value: list },
-		{
-			label: "Logout and Exit",
-			value: async () => {
-				state.clear()
-				process.exit(0)
-			},
-		},
+		{ label: "Logout and Exit", value: logout },
 	]
 
 	const selection = await select({

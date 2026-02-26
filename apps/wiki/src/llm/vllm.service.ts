@@ -1,7 +1,7 @@
 import env from "@/env"
+import logger from "@/logger"
 
 import { OpenAI } from "openai"
-import { Result } from "@ghaerdi/rustify"
 
 class VLLMService {
 	public availableModels: Record<string, string> = {
@@ -14,7 +14,7 @@ class VLLMService {
 	}
 
 	public async checkConnection(): Promise<void> {
-		console.log(`🔌 Connecting to vLLM at ${env.VLLM_URL}...`)
+		logger.info(`Connecting to vLLM at ${env.VLLM_URL}...`)
 
 		const client = new OpenAI({
 			baseURL: env.VLLM_URL,
@@ -22,17 +22,19 @@ class VLLMService {
 			timeout: 5000,
 		})
 
-		const response = await Result.fromAsync(() => client.models.list())
+		let response
 
-		if (!response.isOk()) {
-			console.error(`❌ Failed to connect to vLLM: ${response.unwrapErr()}`)
+		try {
+			response = await client.models.list()
+		} catch (error) {
+			logger.error(`Failed to connect to vLLM: ${error}`)
 			process.exit(1)
 		}
 
-		const models = response.unwrap().data.map(m => m.id)
+		const models = response.data.map(m => m.id)
 
-		console.log(`✅ Connected to vLLM successfully!`)
-		console.log(`📋 Available models: ${models.join(", ")}\n`)
+		logger.info(`Successfully connected to vLLM!`)
+		logger.info(`Available models from vLLM: ${models.join(", ")}`)
 	}
 }
 

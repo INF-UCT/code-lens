@@ -14,8 +14,8 @@ impl AuthController {
 
         tracing::info!("User login with data: {dto:?}");
 
-        let user = self.auth_service.login(dto).await?;
+        let response = self.auth_service.login(dto).await?;
 
-        Ok(JsonResponse::Ok().data(user))
+        Ok(JsonResponse::Ok().data(response))
     }
 }

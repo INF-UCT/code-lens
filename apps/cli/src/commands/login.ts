@@ -4,17 +4,21 @@ import { Command } from "@/main"
 import { state, User, UserData } from "@/state"
 import { intro, password as passwordInput, text, log } from "@clack/prompts"
 
-interface LoginData {
+interface LoginResponseData extends UserData {
+	token: string
+}
+
+interface LoginInput {
 	username: string
 	password: string
 }
 
-class LoginCommand implements Command<LoginData> {
+class LoginCommand implements Command<LoginInput> {
 	intro(): void {
 		intro("Login to Code Lens CLI")
 	}
 
-	async ui(): Promise<LoginData> {
+	async ui(): Promise<LoginInput> {
 		this.intro()
 
 		const env_credentials = this.load_environment_variables()
@@ -47,7 +51,7 @@ class LoginCommand implements Command<LoginData> {
 		}
 	}
 
-	load_environment_variables(): LoginData | null {
+	load_environment_variables(): LoginInput | null {
 		const username = env["CODE_LENS_USERNAME"]
 		const password = env["CODE_LENS_PASSWORD"]
 
@@ -62,23 +66,23 @@ class LoginCommand implements Command<LoginData> {
 	}
 
 	async run(): Promise<void> {
-		const { username, password } = await this.ui()
+		const input = await this.ui()
 
-		const response = await request<UserData>("/auth/login", {
+		const response = await request<LoginResponseData>("/auth/login", {
 			method: "POST",
-			body: { username, password },
+			body: { username: input.username, password: input.password },
 		})
 
-		if (response.success && response.data && User.is(response.data)) {
-			state.setUser(new User(response.data))
-		}
-
-		if (!response.success) {
+		if (!response.success || !response.data) {
 			log.error(
 				`Login failed: ${response.message ?? "Unknown error. Try again later."}`
 			)
-
 			process.exit(1)
+		}
+
+		if (User.is(response.data)) {
+			state.setUser(new User(response.data, response.data.token))
+			log.success(`Logged in as ${response.data.username}`)
 		}
 	}
 

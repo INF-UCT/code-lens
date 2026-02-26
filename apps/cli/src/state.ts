@@ -1,21 +1,27 @@
 export type UserData = {
 	id: string
 	username: string
+	email?: string
 }
 
 export class User {
 	id: string
 	username: string
+	email: string
+	token: string
 
-	constructor(data: UserData) {
+	constructor(data: UserData, token: string) {
 		this.id = data.id
 		this.username = data.username
+		this.email = data.email ?? ""
+		this.token = token
 	}
 
-	static is(obj: object): obj is UserData {
+	static is(obj: object): obj is UserData & { token: string } {
 		return (
 			typeof (obj as UserData).id === "string" &&
-			typeof (obj as UserData).username === "string"
+			typeof (obj as UserData).username === "string" &&
+			typeof (obj as { token: string }).token === "string"
 		)
 	}
 }
@@ -29,6 +35,10 @@ export class State {
 
 	getUser(): User | null {
 		return this.user
+	}
+
+	getToken(): string | null {
+		return this.user?.token ?? null
 	}
 
 	isLoggedIn(): boolean {

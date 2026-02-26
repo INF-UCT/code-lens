@@ -42,9 +42,16 @@ class GenerateTokenCommand implements Command<GenerateTokenData> {
 		}
 
 		const user_id = state.getUser()?.id ?? ""
+		const token = state.getToken()
+
+		if (!token) {
+			log.error("Session expired. Please login again.")
+			process.exit(1)
+		}
 
 		const response = await request<string>("/tokens/generate", {
 			method: "POST",
+			authorization: `Bearer ${token}`,
 			body: { user_id, repository_url },
 		})
 

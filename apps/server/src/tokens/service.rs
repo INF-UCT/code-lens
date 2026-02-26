@@ -1,6 +1,6 @@
 use crate::{
     shared::{AppResult, JsonWebTokenService},
-    tokens::{GenerateTokenDto, Token, TokenClaims, TokensRepository},
+    tokens::{GenerateTokenDto, Token, TokenClaims, TokensRepository, UserClaims},
 };
 
 use chrono::{Duration, Utc};
@@ -47,5 +47,27 @@ impl TokensService {
 
     pub fn decode(&self, token: &String) -> AppResult<TokenClaims> {
         self.jwt_service.decode(token, self.config.secret.as_ref())
+    }
+
+    pub fn decode_user_token(&self, token: &String) -> AppResult<UserClaims> {
+        self.jwt_service.decode(token, self.config.secret.as_ref())
+    }
+
+    pub fn hash_token(token: &str) -> String {
+        use std::collections::hash_map::DefaultHasher;
+        use std::hash::{Hash, Hasher};
+        let mut hasher = DefaultHasher::new();
+        token.hash(&mut hasher);
+        format!("{:x}", hasher.finish())
+    }
+
+    pub async fn revoke_token(&self, token: &String) -> AppResult<()> {
+        let hash = Self::hash_token(token);
+        self.tokens_repository.revoke_token(&hash).await
+    }
+
+    pub async fn is_token_revoked(&self, token: &String) -> AppResult<bool> {
+        let hash = Self::hash_token(token);
+        self.tokens_repository.is_token_revoked(&hash).await
     }
 }

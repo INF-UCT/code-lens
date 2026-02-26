@@ -5,6 +5,7 @@ const schema = z.object({
 	WIKI_SERVICE_API_KEY: z
 		.string()
 		.nonempty("WIKI_SERVICE_API_KEY env var is required"),
+	LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 })
 
 export default schema.parse(process.env)

@@ -1,9 +1,10 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
-use std::collections::HashMap;
+// use std::collections::HashMap;
 use uuid::Uuid;
-use validator::{Validate, ValidationError};
+// use validator::ValidationError;
+use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Repository {
@@ -25,7 +26,7 @@ pub struct AnalyzeRepositoryDto {
     #[validate(url)]
     pub url: String, // github.event.repository.html_url
 
-    #[validate(custom(function = "validate_branch"))]
+    // #[validate(custom(function = "validate_branch"))]
     pub branch: String, // For push events
 
     #[serde(default)]
@@ -49,14 +50,14 @@ impl From<(&Uuid, &AnalyzeRepositoryDto)> for Repository {
     }
 }
 
-fn validate_branch(branch: &str) -> Result<(), ValidationError> {
-    if branch != "main" && branch != "master" && branch != "development" {
-        return Err(ValidationError {
-            code: "branch".into(),
-            message: Some("Branch must be 'main' or 'master'".into()),
-            params: HashMap::new(),
-        });
-    }
+// fn validate_branch(branch: &str) -> Result<(), ValidationError> {
+//     if branch != "main" && branch != "master" && branch != "development" {
+//         return Err(ValidationError {
+//             code: "branch".into(),
+//             message: Some("Branch must be 'main' or 'master'".into()),
+//             params: HashMap::new(),
+//         });
+//     }
 
-    Ok(())
-}
+//     Ok(())
+// }

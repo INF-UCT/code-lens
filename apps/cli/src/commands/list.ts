@@ -28,8 +28,16 @@ class ListTokensCommand implements Command<void> {
 			process.exit(1)
 		}
 
+		const token = state.getToken()
+
+		if (!token) {
+			log.error("Session expired. Please login again.")
+			process.exit(1)
+		}
+
 		const response = await request<Token[]>(`/tokens/${state.getUser()!.id}`, {
 			method: "GET",
+			authorization: `Bearer ${token}`,
 		})
 
 		const tokens = response.data ?? []

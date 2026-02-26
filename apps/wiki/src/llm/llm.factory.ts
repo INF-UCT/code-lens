@@ -1,27 +1,34 @@
-import { ChatOpenAI } from "@langchain/openai"
 import { vllmService } from "@/llm/vllm.service"
+import { ChatOpenAI, ChatOpenAIFields } from "@langchain/openai"
 
-export class LLMFactory {
-	static createPlannerModel() {
-		return new ChatOpenAI({
-			modelName: vllmService.availableModels.DEEPSEEK,
-			temperature: 0, // Más determinístico para JSON
+class LLMFactory {
+	public createPlannerModel(): ChatOpenAI {
+		const options: ChatOpenAIFields = {
+			model: vllmService.availableModels.QWEN_3_4B,
+			temperature: 0.1,
 			apiKey: "dummy",
-			maxTokens: 1000, // Limitar tokens para evitar divagaciones
+			maxTokens: 4000,
 			configuration: {
 				baseURL: vllmService.getBaseURL(),
 			},
-		})
+		}
+
+		return new ChatOpenAI(options)
 	}
 
-	static createWriterModel() {
-		return new ChatOpenAI({
-			modelName: vllmService.availableModels.DEEPSEEK,
-			temperature: 0.3,
+	public createWriterModel(): ChatOpenAI {
+		const options: ChatOpenAIFields = {
+			model: vllmService.availableModels.QWEN_3_4B,
+			temperature: 0,
 			apiKey: "dummy",
+			maxTokens: 4000,
 			configuration: {
 				baseURL: vllmService.getBaseURL(),
 			},
-		})
+		}
+
+		return new ChatOpenAI(options)
 	}
 }
+
+export const llmFactory = new LLMFactory()

@@ -3184,7 +3184,6 @@ dependencies = [
  "jsonwebtoken",
  "ldap3",
  "lettre",
- "regex-lite",
  "reqwest",
  "serde",
  "serde_json",

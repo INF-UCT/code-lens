@@ -64,13 +64,17 @@ impl RepositoriesService {
         };
 
         let clone_path_str = clone_path.to_str().unwrap_or_default().to_string();
-        let repository_trees = self.generate_trees(&clone_path).await?;
+        let repository_flat_tree = self.generate_tree(&clone_path).await?;
 
-        tokio::try_join!(
-            self.mailer.send(mail),
-            self.wiki_client
-                .request_docs_gen(&repo.id, clone_path_str, repository_trees)
-        )?;
+        let wiki_client = self.wiki_client.clone();
+        let mailer = self.mailer.clone();
+
+        tokio::spawn(async move {
+            let _ = mailer.send(mail).await;
+            let _ = wiki_client
+                .request_docs_gen(&repo.id, clone_path_str, repository_flat_tree)
+                .await;
+        });
 
         Ok(repo.id)
     }
@@ -136,38 +140,19 @@ impl RepositoriesService {
         Ok(base_dir)
     }
 
-    async fn generate_flat_tree(&self, repo_dir_path: &Path) -> AppResult<String> {
-        let command = "rg --files --hidden --no-ignore | sort";
+    async fn generate_tree(&self, repo_dir: &Path) -> AppResult<String> {
+        tracing::debug!("Generating repository trees for {}", repo_dir.display());
 
-        self.run_tree_command(&command, repo_dir_path).await
-    }
-
-    async fn generate_repo_hierarchy_tree(&self, repo_dir_path: &Path) -> AppResult<String> {
-        let command = "tree -a -N --noreport --dirsfirst \
-            | tail -n +2 \
-            | sed 's/[├└]── /  /g; s/│/  /g'";
-
-        self.run_tree_command(&command, repo_dir_path).await
-    }
-
-    async fn generate_trees(&self, repo_dir: &Path) -> AppResult<(String, String)> {
-        tracing::info!("Generating repository trees for {}", repo_dir.display());
-
-        let flat_tree = self.generate_flat_tree(repo_dir).await?;
+        let flat_tree = self.run_tree_command(&repo_dir).await?;
 
         tracing::info!("Completed generating flat tree for {}", repo_dir.display());
 
-        let hierarchy_tree = self.generate_repo_hierarchy_tree(repo_dir).await?;
-
-        tracing::info!(
-            "Completed generating hierarchy tree for {}",
-            repo_dir.display()
-        );
-
-        Ok((flat_tree, hierarchy_tree))
+        Ok(flat_tree)
     }
 
-    async fn run_tree_command(&self, command: &str, repo_dir_path: &Path) -> AppResult<String> {
+    async fn run_tree_command(&self, repo_dir_path: &Path) -> AppResult<String> {
+        let command = "rg --files --hidden --no-ignore | sort";
+
         let output = Command::new("sh")
             .arg("-c")
             .arg(command)

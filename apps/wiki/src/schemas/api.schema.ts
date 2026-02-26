@@ -1,9 +1,8 @@
 import * as z from "zod"
 
 export const DocGenerationDto = z.object({
-	repoId: z.uuid({ version: "v4" }),
+	repoId: z.string().uuid(),
 	repoPath: z.string().nonempty(),
-	hierarchyTree: z.string().nonempty(),
 	flatTree: z.string().nonempty(),
 })
 
