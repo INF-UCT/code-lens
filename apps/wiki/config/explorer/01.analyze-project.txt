@@ -1,18 +1,19 @@
+/no_think
 
 Analyze this project and identify the 10 most important files to understand it.
 
 Project path: {{projectPath}}
 
-File tree:
-{{projectFileTree}}
-
 Focus on: what does this project do, what is its architecture, and what are its core components.
 
-Once you have explored enough, provide a final summary that MUST include:
-- The 10 most important files with their paths and reasons
+Once you have explored enough, write a final summary that MUST include:
+- The 10 most important files with their paths and reasons to be important
 - What the project does in 2-3 sentences
-- The full tech stack: languages, frameworks, libraries, and tools detected`)
+- The full tech stack: languages, frameworks, libraries, and tools detected
 
 Rules:
-- If you are not sure about one technology, pass on it. Only include technologies you are confident about.
-- The heuristic for get the tech stack is analysis of the file types, their content, and any configuration files that declare dependencies or build processes.
+- The path of each file should be relative to the project root. For ejemplo if the project root is `/my-project`, and an important file is located at `/my-project/src/index.js`, you should list it as `src/index.js`.
+
+- Start by listing the root directory, then explore from there
+- If you are not sure about one technology, skip it
+- Base the tech stack on file types, content, and dependency/config files

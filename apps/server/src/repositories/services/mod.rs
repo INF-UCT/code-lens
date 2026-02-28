@@ -8,13 +8,9 @@ use crate::{
 
 use git2::{Oid, Repository as GitRepository};
 use serde::{Deserialize, Serialize};
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use std::{collections::HashMap, path::PathBuf, sync::Arc};
 use sword::prelude::*;
-use tokio::{fs, process::Command};
+use tokio::fs;
 use uuid::Uuid;
 
 pub use preprocessor::RepositoriesPreprocessor;
@@ -64,16 +60,13 @@ impl RepositoriesService {
         };
 
         let clone_path_str = clone_path.to_str().unwrap_or_default().to_string();
-        let repository_flat_tree = self.generate_tree(&clone_path).await?;
 
         let wiki_client = self.wiki_client.clone();
         let mailer = self.mailer.clone();
 
         tokio::spawn(async move {
             let _ = mailer.send(mail).await;
-            let _ = wiki_client
-                .request_docs_gen(&repo.id, clone_path_str, repository_flat_tree)
-                .await;
+            let _ = wiki_client.request_docs_gen(&repo.id, clone_path_str).await;
         });
 
         Ok(repo.id)
@@ -138,38 +131,5 @@ impl RepositoriesService {
         tracing::info!("Completed clone {dir_str}");
 
         Ok(base_dir)
-    }
-
-    async fn generate_tree(&self, repo_dir: &Path) -> AppResult<String> {
-        tracing::debug!("Generating repository trees for {}", repo_dir.display());
-
-        let flat_tree = self.run_tree_command(&repo_dir).await?;
-
-        tracing::info!("Completed generating flat tree for {}", repo_dir.display());
-
-        Ok(flat_tree)
-    }
-
-    async fn run_tree_command(&self, repo_dir_path: &Path) -> AppResult<String> {
-        let command = "rg --files --hidden --no-ignore | sort";
-
-        let output = Command::new("sh")
-            .arg("-c")
-            .arg(command)
-            .current_dir(&repo_dir_path)
-            .output()
-            .await
-            .map_err(RepositoryError::from)?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            tracing::error!("Failed to run command `{command}`: {stderr}");
-
-            return Err(RepositoryError::Sanitization(format!(
-                "Failed to run command `{command}`: {stderr}",
-            )))?;
-        }
-
-        Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 }

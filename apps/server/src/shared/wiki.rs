@@ -31,14 +31,12 @@ impl WikiClient {
         &self,
         repository_id: &Uuid,
         repository_clone_path: String,
-        repository_flat_tree: String,
     ) -> AppResult<()> {
         let url = format!("{}/docs-gen", self.config.service_url);
 
         let body = json!({
             "repoId": repository_id.to_string(),
             "repoPath": repository_clone_path,
-            "flatTree": repository_flat_tree,
         });
 
         let response = self

@@ -1,4 +1,5 @@
 import { ChatOpenAI } from "@langchain/openai"
+import { HumanMessage } from "langchain"
 
 export abstract class Agent<T> {
 	constructor(protected llm: ChatOpenAI) {}
@@ -7,5 +8,21 @@ export abstract class Agent<T> {
 	protected abstract formatOutput(rawOutput: string): Promise<T>
 }
 
-export { PlannerAgent } from "@/agents/planner/agent"
-export { ExplorerAgent } from "@/agents/explorer/agent"
+export class AgentInvokeBuilder {
+	private messages: HumanMessage[] = []
+	private recursionLimit: number = 100
+
+	withPrompt(message: string): this {
+		this.messages.push(new HumanMessage(message))
+		return this
+	}
+
+	withRecursionLimit(limit: number): this {
+		this.recursionLimit = limit
+		return this
+	}
+
+	build(): [{ messages: HumanMessage[] }, { recursionLimit: number }] {
+		return [{ messages: this.messages }, { recursionLimit: this.recursionLimit }]
+	}
+}

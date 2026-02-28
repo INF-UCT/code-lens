@@ -1,21 +1,16 @@
 import logger from "@/utils/logger"
 
 import { createAgent } from "langchain"
-import { HumanMessage } from "@langchain/core/messages"
-
 import { prompts } from "@/utils/prompts"
 import { llmFactory } from "@/llm/llm.factory"
 import { ExplorerOutputSchema, ExplorerAgentOutput } from "@/agents/explorer/schemas"
 
-import { Agent } from "@/agents"
+import { Agent, AgentInvokeBuilder } from "@/agents"
 import { Tools } from "@/mcp/types"
 import { fileSystemMCP } from "@/mcp/filesystem"
 
 export class ExplorerAgent extends Agent<ExplorerAgentOutput> {
-	constructor(
-		private readonly fileTree: string,
-		private readonly projectPath: string
-	) {
+	constructor(private readonly projectPath: string) {
 		super(llmFactory.createModel())
 	}
 
@@ -38,17 +33,17 @@ export class ExplorerAgent extends Agent<ExplorerAgentOutput> {
 			systemPrompt: prompts.get("explorer/system"),
 		})
 
-		const message = new HumanMessage(
-			prompts.get("explorer/analyze-project", {
-				projectPath: this.projectPath,
-				projectFileTree: this.fileTree,
-			})
-		)
+		const prompt = prompts.get("explorer/analyze-project", {
+			projectPath: this.projectPath,
+		})
+
+		const [messages, config] = new AgentInvokeBuilder()
+			.withPrompt(prompt)
+			.withRecursionLimit(100)
+			.build()
 
 		const result = await agent
-			.invoke({
-				messages: [message],
-			})
+			.invoke(messages, config)
 			.then(result => {
 				const lastMessage = (result.messages.at(-1)?.content ?? "").toString()
 				logger.info(`[ExplorerAgent] Agent response: ${lastMessage}`)
@@ -63,20 +58,27 @@ export class ExplorerAgent extends Agent<ExplorerAgentOutput> {
 	}
 
 	protected async formatOutput(rawOutput: string): Promise<ExplorerAgentOutput> {
-		const formatterModel = this.llm.withStructuredOutput(ExplorerOutputSchema)
-		const formatterMessage = new HumanMessage(
-			prompts.get("explorer/format-output", {
-				input: rawOutput,
-			})
-		)
+		const prompt = prompts.get("explorer/format-output", {
+			input: rawOutput,
+		})
 
-		const output = await formatterModel
-			.invoke([formatterMessage])
+		const [messages, config] = new AgentInvokeBuilder()
+			.withPrompt(prompt)
+			.withRecursionLimit(5)
+			.build()
+
+		const agent = createAgent({
+			model: this.llm,
+			responseFormat: ExplorerOutputSchema,
+		})
+
+		const output = await agent
+			.invoke(messages, config)
 			.then(result => {
 				logger.info(
 					`[ExplorerAgent] Formatted output: ${JSON.stringify(result, null, 2)}`
 				)
-				return result
+				return result.structuredResponse
 			})
 			.catch(error => {
 				logger.error(`[ExplorerAgent] Error formatting output: ${error}`)

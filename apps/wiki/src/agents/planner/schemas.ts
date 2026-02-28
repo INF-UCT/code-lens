@@ -8,6 +8,7 @@ const KeyFileSchema = z.object({
 const SectionSchema = z.object({
 	title: z.string().describe("Title of the section"),
 	keyfiles: z.array(KeyFileSchema).describe("List of key files for this section"),
+	description: z.string().describe("A tiny description of the section"),
 })
 
 export const PlannerAgentOutputSchema = z.object({
