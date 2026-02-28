@@ -1,5 +1,5 @@
-import env from "@/env"
-import logger from "@/logger"
+import env from "@/utils/env"
+import logger from "@/utils/logger"
 
 import { OpenAI } from "openai"
 

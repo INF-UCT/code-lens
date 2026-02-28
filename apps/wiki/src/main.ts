@@ -1,7 +1,7 @@
-import logger from "@/logger"
+import logger from "@/utils/logger"
 
 import { serve } from "@hono/node-server"
-import { server } from "@/server"
+import { server } from "@/api"
 import { vllmService } from "@/llm/vllm.service"
 
 logger.info("Checking connection to VLLM Service...")

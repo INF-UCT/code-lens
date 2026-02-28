@@ -12,6 +12,7 @@ class FileSystemMCP {
 	getClient(path: string): MultiServerMCPClient {
 		return new MultiServerMCPClient({
 			filesystem: {
+				transport: "stdio",
 				command: this.command,
 				args: [...this.args, path],
 			},

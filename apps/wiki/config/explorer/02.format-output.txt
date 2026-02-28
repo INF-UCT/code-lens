@@ -1,0 +1,11 @@
+You are extracting structured data from a project analysis.
+
+Rules:
+- "keyfiles" a list of files where each file is an object with "path" and "reason" properties. The ""reason" should be a short explanation of why this file is important to understanding the project based on its content. (The input probably contains a "reason" for each file, if it does, use that. If not, write your own based on the file's role in the project.)
+- "summary" must be 2-3 sentences describing what the project does
+- "technologies" must list every technology mentioned in the analysis
+- Respond only with the JSON, no extra text
+
+The output should be a JSON object with the following structure:
+
+{{input}}

@@ -23,16 +23,20 @@ class PromptHandler {
 		}
 	}
 
-	/**
-	 * Genera la clave del prompt a partir del filepath
-	 * Ejemplo: "config/planner/01.select-summary-files.txt" -> "select-summary-files"
-	 * Ejemplo: "config/prompt.txt" -> "prompt"
-	 */
 	private generateKey(filePath: string): string {
 		const relativePath = path.relative(this.configPath, filePath)
-		const fileName = relativePath.split(/[/\\]/).pop() || ""
 
-		return fileName.replace(/\.txt$/, "").replace(/^\d+\./, "")
+		const normalized = relativePath.replace(/\\/g, "/")
+		const parts = normalized.split("/")
+
+		const fileName = parts.pop() || ""
+		const cleanedFileName = fileName.replace(/^\d+\./, "").replace(/\.txt$/, "")
+
+		if (parts.length > 0) {
+			return `${parts.join("/")}/${cleanedFileName}`
+		}
+
+		return cleanedFileName
 	}
 
 	private scanDirectory(dir: string): string[] {
@@ -66,14 +70,6 @@ class PromptHandler {
 			if (varName in variables) return String(variables[varName])
 			return match
 		})
-	}
-
-	getAvailablePrompts(): string[] {
-		return Array.from(this.prompts.keys())
-	}
-
-	hasPrompt(key: string): boolean {
-		return this.prompts.has(key)
 	}
 }
 

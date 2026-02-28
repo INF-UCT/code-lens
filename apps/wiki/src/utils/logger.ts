@@ -1,4 +1,4 @@
-import env from "@/env"
+import env from "@/utils/env"
 
 type LogLevel = "debug" | "info" | "warn" | "error"
 const logLevels: LogLevel[] = ["debug", "info", "warn", "error"]
