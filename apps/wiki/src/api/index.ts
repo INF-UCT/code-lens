@@ -1,11 +1,9 @@
 import logger from "@/utils/logger"
 
 import { Hono } from "hono"
-import { ExplorerAgent } from "@/agents/explorer/agent"
-
 import { apiKeyAuth } from "@/api/middleware"
-import { DocGenerationDto, DocGenerationInput } from "@/api/schemas"
 import { PlannerAgent } from "@/agents/planner/agent"
+import { DocGenerationDto, DocGenerationInput } from "@/api/schemas"
 
 const app = new Hono()
 
@@ -15,22 +13,9 @@ app.post("/docs-gen", apiKeyAuth, async c => {
 
 	logger.info(`Repository ID: ${body.repoId}`)
 	logger.info(`Repository Path: ${body.repoPath}`)
+	logger.info(`Repository Tree\n: ${body.repoTree}`)
 
-	const explorerAgent = new ExplorerAgent(body.repoPath)
-
-	const explorerOutput = await explorerAgent.run().catch(error => {
-		logger.error(`Error running ExplorerAgent: ${error}`)
-		return undefined
-	})
-
-	if (!explorerOutput) {
-		return c.json(
-			{ error: "Failed to analyze repository", repo_id: body.repoId },
-			500
-		)
-	}
-
-	const plannerAgent = new PlannerAgent(body.repoPath, explorerOutput)
+	const plannerAgent = new PlannerAgent(body.repoPath, body.repoTree)
 
 	const plannerOutput = await plannerAgent.run().catch(error => {
 		logger.error(`Error running PlannerAgent: ${error}`)
@@ -48,8 +33,7 @@ app.post("/docs-gen", apiKeyAuth, async c => {
 
 	return c.json({
 		repo_id: body.repoId,
-		message: "Documentation sections generated successfully",
-		sections_count: plannerOutput.sections.length,
+		message: "Documentation generated successfully",
 	})
 })
 

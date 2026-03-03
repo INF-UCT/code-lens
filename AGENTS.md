@@ -29,16 +29,10 @@ Git push
   → Rust server    validate JWT token        upsert repository row
                    git2::clone               checkout exact commit SHA
                    preprocessor              remove ignored/oversized files
-                   generate_trees()          flat list + visual hierarchy
                    tokio::try_join!
                      ├── SMTP email          "Documentation started" to owner
                      └── POST localhost:3000/docs-gen  (wiki service)
-  → Wiki service   Zod-validate body
-                   plannerAgent.run()
-                     Stage 1: LLM selects up to 10 key files from tree
-                     Stage 2: LLM reads files, writes ≤150-word summary
-                     Stage 3: LLM proposes 3–8 documentation sections
-                     Stage 4: writer agent per section → Markdown (scaffolded)
+  → Wiki service   Generate docs (still on development)
   → Output         /wiki_output/{repo_id}/01-overview.md  ...
 ```
 
@@ -92,14 +86,14 @@ See the [Makefile](Makefile) for all available commands.
 
 ### Naming Conventions
 
-| Construct | Convention | Example |
-|---|---|---|
-| Variables / functions / parameters | `camelCase` | `repoPath`, `generateDocs` |
-| Classes / interfaces / types | `PascalCase` | `PlannerAgent`, `DocGenerationInput` |
-| Constants / enum-like keys | `SCREAMING_SNAKE_CASE` | `DEEPSEEK`, `QWEN_3_4B` |
-| Source files (multi-word) | dot notation | `llm.factory.ts`, `vllm.service.ts` |
-| Source files (single-word) | plain | `planner.ts`, `env.ts` |
-| Schema files | `.schema.ts` suffix | `api.schema.ts`, `sections.schema.ts` |
+| Construct                          | Convention             | Example                               |
+| ---------------------------------- | ---------------------- | ------------------------------------- |
+| Variables / functions / parameters | `camelCase`            | `repoPath`, `generateDocs`            |
+| Classes / interfaces / types       | `PascalCase`           | `PlannerAgent`, `DocGenerationInput`  |
+| Constants / enum-like keys         | `SCREAMING_SNAKE_CASE` | `DEEPSEEK`, `QWEN_3_4B`               |
+| Source files (multi-word)          | dot notation           | `llm.factory.ts`, `vllm.service.ts`   |
+| Source files (single-word)         | plain                  | `planner.ts`, `env.ts`                |
+| Schema files                       | `.schema.ts` suffix    | `api.schema.ts`, `sections.schema.ts` |
 
 ### Types
 

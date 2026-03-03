@@ -14,7 +14,9 @@ COPY apps/wiki/package*.json ./apps/wiki/
 
 FROM base AS dev
 
-RUN cd apps/wiki && npm ci
+RUN apk add --no-cache tree
+
+RUN cd apps/wiki && npm ci && npm i
 
 COPY apps/wiki ./apps/wiki
 WORKDIR /app/apps/wiki

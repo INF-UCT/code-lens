@@ -1,19 +1,29 @@
 import z from "zod"
 
-const KeyFileSchema = z.object({
-	path: z.string().describe("The file path"),
-	reason: z.string().describe("Why this file is important for this section"),
+const WikiPageSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	description: z.string(),
+	importance: z.enum(["high", "medium", "low"]),
+	relevant_files: z.array(z.string()),
+	related_pages: z.array(z.string()),
+	parent_section: z.string().optional(),
 })
 
-const SectionSchema = z.object({
-	title: z.string().describe("Title of the section"),
-	keyfiles: z.array(KeyFileSchema).describe("List of key files for this section"),
-	description: z.string().describe("A tiny description of the section"),
+const WikiSectionSchema = z.object({
+	id: z.string(),
+	title: z.string(),
+	pages: z.array(z.string()), // IDs de pages
+	subsections: z.array(z.string()), // IDs de otras sections
 })
 
-export const PlannerAgentOutputSchema = z.object({
-	sections: z.array(SectionSchema).describe("List of sections in the project"),
-	summary: z.string().describe("A extended summary of the project"),
+export const WikiStructureSchema = z.object({
+	title: z.string(),
+	description: z.string(),
+	sections: z.array(WikiSectionSchema),
+	pages: z.array(WikiPageSchema),
 })
 
-export type PlannerAgentOutput = z.infer<typeof PlannerAgentOutputSchema>
+export type WikiPage = z.infer<typeof WikiPageSchema>
+export type WikiSection = z.infer<typeof WikiSectionSchema>
+export type WikiStructure = z.infer<typeof WikiStructureSchema>

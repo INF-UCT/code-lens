@@ -8,9 +8,13 @@ use crate::{
 
 use git2::{Oid, Repository as GitRepository};
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, path::PathBuf, sync::Arc};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 use sword::prelude::*;
-use tokio::fs;
+use tokio::{fs, process::Command};
 use uuid::Uuid;
 
 pub use preprocessor::RepositoriesPreprocessor;
@@ -60,13 +64,16 @@ impl RepositoriesService {
         };
 
         let clone_path_str = clone_path.to_str().unwrap_or_default().to_string();
+        let repository_tree = self.generate_tree(&clone_path).await?;
 
         let wiki_client = self.wiki_client.clone();
         let mailer = self.mailer.clone();
 
         tokio::spawn(async move {
             let _ = mailer.send(mail).await;
-            let _ = wiki_client.request_docs_gen(&repo.id, clone_path_str).await;
+            let _ = wiki_client
+                .request_docs_gen(&repo.id, clone_path_str, repository_tree)
+                .await;
         });
 
         Ok(repo.id)
@@ -131,5 +138,26 @@ impl RepositoriesService {
         tracing::info!("Completed clone {dir_str}");
 
         Ok(base_dir)
+    }
+
+    async fn generate_tree(&self, repo_dir_path: &Path) -> AppResult<String> {
+        let output = Command::new("sh")
+            .arg("-c")
+            .arg("rg --files --hidden --no-ignore | sort")
+            .current_dir(&repo_dir_path)
+            .output()
+            .await
+            .map_err(RepositoryError::from)?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            tracing::error!("Failed to run the tree command: {stderr}");
+
+            return Err(RepositoryError::Sanitization(format!(
+                "Failed to run command to generate repository tree: {stderr}"
+            )))?;
+        }
+
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 }

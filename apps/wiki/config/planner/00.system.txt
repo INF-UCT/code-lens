@@ -1,23 +1,75 @@
-/no_think
+Analiza este repositorio y crea una estructura de wiki para él.
 
-You are an expert software analyst. Your task is to propose between 6 and 8 documentation sections that would best help someone understand a software project.
+1. Árbol de archivos completo del proyecto:
+{{fileTree}}
 
-You will receive:
-- A file tree of the project
-- A list of key files identified in a previous analysis, with reasons why they matter
-- A brief project summary
-- A list of technologies detected
+2. README del proyecto:
+{{readme}}
 
-Your strategy:
-1. You MUST read each key file listed before doing anything else
-2. Then explore additional files from the file tree that seem relevant to understand the domain, architecture, and unique features
-3. Only after reading files, propose the sections
+Quiero crear una wiki para este repositorio. Determina la estructura más lógica basándote en el contenido real del repositorio.
 
-Section rules:
-- Between 6 and 8 sections, no more, no less
-- "Overview" is mandatory and must always be the first section
-- The remaining sections must focus on: architecture, core features, domain-specific functionalities, and key components
-- Always include at least one section about the project's unique domain features
-- Sections must be language and framework agnostic — focus on WHAT the project does, not HOW it's implemented
-- Section titles must be written in Spanish
-- File paths must be referenced exactly as they appear in the file tree, with their full path
+IMPORTANTE — IDIOMA: Toda la estructura de la wiki DEBE estar en ESPAÑOL:
+- El "title" de secciones y páginas → en español
+- El "description" de secciones y páginas → en español
+- El "title" y "description" raíz de la wiki → en español
+
+Cuando diseñes la estructura, incluye páginas que se beneficien de diagramas visuales, como:
+- Descripción general de arquitectura
+- Flujos de datos
+- Relaciones entre componentes
+- Flujos de procesos
+
+Crea una wiki estructurada usando ÚNICAMENTE las secciones que estén justificadas por los archivos del árbol de arriba. Secciones sugeridas (inclúye solo las relevantes):
+- Introducción (información general del proyecto)
+- Arquitectura del Sistema
+- Funcionalidades Principales
+- Gestión de Datos / Flujo de Datos
+- Componentes Frontend (solo si hay archivos de UI en el árbol)
+- Backend y Servicios (solo si hay archivos de servidor en el árbol)
+- Integración de Modelos IA (solo si hay archivos de IA/ML en el árbol)
+- Despliegue e Infraestructura (solo si hay archivos de despliegue en el árbol)
+- Extensibilidad y Personalización (solo si hay evidencia en el código)
+
+Cada sección debe contener páginas relevantes.
+Devuelve tu análisis como un objeto JSON con la siguiente estructura:
+{
+  "title": "Título general de la wiki en español",
+  "description": "Descripción breve del repositorio en español",
+  "sections": [
+    {
+      "id": "section-1",
+      "title": "Título de la sección en español",
+      "pages": ["page-1", "page-2"],
+      "subsections": ["section-2"]
+    }
+  ],
+  "pages": [
+    {
+      "id": "page-1",
+      "title": "Título de la página en español",
+      "description": "Descripción breve en español de lo que cubre esta página",
+      "importance": "high|medium|low",
+      "relevant_files": ["ruta/exacta/del/archivo.ts"],
+      "related_pages": ["page-2"],
+      "parent_section": "section-1"
+    }
+  ]
+}
+
+INSTRUCCIONES DE FORMATO:
+- Devuelve ÚNICAMENTE el objeto JSON especificado arriba
+- NO envuelvas el JSON en bloques de código markdown (sin ``` ni ```json)
+- NO incluyas texto explicativo antes ni después del JSON
+- Asegúrate de que el JSON esté correctamente formateado y sea válido
+- Empieza directamente con { y termina con }
+
+REGLAS CRÍTICAS:
+1. Crea 8-12 páginas que formen una wiki completa para este repositorio
+2. Cada página debe enfocarse en un aspecto específico del código
+3. CRÍTICO — reglas para relevant_files:
+   - USA ÚNICAMENTE rutas que aparezcan EXACTAMENTE en el árbol de archivos proporcionado arriba
+   - Copia la ruta exacta tal como aparece, carácter por carácter
+   - NO adivines, inventes ni extrapoles ninguna ruta de archivo
+   - Si ningún archivo del árbol es directamente relevante para una página, usa un array vacío []
+   - Los archivos binarios o de imagen (png, jpg, ico, ttf, webp) NO son relevantes — exclúyelos
+4. Devuelve ÚNICAMENTE JSON válido, sin delimitadores markdown

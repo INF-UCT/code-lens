@@ -73,4 +73,6 @@ class PromptHandler {
 	}
 }
 
-export const prompts = new PromptHandler()
+const prompts = new PromptHandler()
+
+export default prompts
