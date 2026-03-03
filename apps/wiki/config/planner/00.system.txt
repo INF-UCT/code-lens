@@ -1,44 +1,44 @@
-Analiza este repositorio y crea una estructura de wiki para él.
+Analyze this repository and create a wiki structure for it.
 
-1. Árbol de archivos completo del proyecto:
+1. Complete file tree of the project:
 {{fileTree}}
 
-2. README del proyecto:
+2. Project README:
 {{readme}}
 
-Quiero crear una wiki para este repositorio. Determina la estructura más lógica basándote en el contenido real del repositorio.
+I want to create a wiki for this repository. Determine the most logical structure based on the actual repository content.
 
-IMPORTANTE — IDIOMA: Toda la estructura de la wiki DEBE estar en ESPAÑOL:
-- El "title" de secciones y páginas → en español
-- El "description" de secciones y páginas → en español
-- El "title" y "description" raíz de la wiki → en español
+IMPORTANT — LANGUAGE: The entire wiki structure MUST be in SPANISH:
+- The "title" of sections and pages → in Spanish
+- The "description" of sections and pages → in Spanish
+- The root "title" and "description" of the wiki → in Spanish
 
-Cuando diseñes la estructura, incluye páginas que se beneficien de diagramas visuales, como:
-- Descripción general de arquitectura
-- Flujos de datos
-- Relaciones entre componentes
-- Flujos de procesos
+When designing the structure, include pages that would benefit from visual diagrams, such as:
+- Architecture overview
+- Data flows
+- Component relationships
+- Process flows
 
-Crea una wiki estructurada usando ÚNICAMENTE las secciones que estén justificadas por los archivos del árbol de arriba. Secciones sugeridas (inclúye solo las relevantes):
-- Introducción (información general del proyecto)
-- Arquitectura del Sistema
-- Funcionalidades Principales
-- Gestión de Datos / Flujo de Datos
-- Componentes Frontend (solo si hay archivos de UI en el árbol)
-- Backend y Servicios (solo si hay archivos de servidor en el árbol)
-- Integración de Modelos IA (solo si hay archivos de IA/ML en el árbol)
-- Despliegue e Infraestructura (solo si hay archivos de despliegue en el árbol)
-- Extensibilidad y Personalización (solo si hay evidencia en el código)
+Create a structured wiki using ONLY sections that are justified by the files in the tree above. Suggested sections (include only the relevant ones):
+- Introduction (general project information)
+- System Architecture
+- Core Features
+- Data Management / Data Flow
+- Frontend Components (only if there are UI files in the tree)
+- Backend and Services (only if there are server-side files in the tree)
+- AI Model Integration (only if there are AI/ML files in the tree)
+- Deployment and Infrastructure (only if there are deployment files in the tree)
+- Extensibility and Customization (only if there is evidence of this in the code)
 
-Cada sección debe contener páginas relevantes.
-Devuelve tu análisis como un objeto JSON con la siguiente estructura:
+Each section should contain relevant pages.
+Return your analysis as a JSON object with the following structure:
 {
-  "title": "Título general de la wiki en español",
-  "description": "Descripción breve del repositorio en español",
+  "title": "Overall wiki title in Spanish",
+  "description": "Brief repository description in Spanish",
   "sections": [
     {
       "id": "section-1",
-      "title": "Título de la sección en español",
+      "title": "Section title in Spanish",
       "pages": ["page-1", "page-2"],
       "subsections": ["section-2"]
     }
@@ -46,30 +46,30 @@ Devuelve tu análisis como un objeto JSON con la siguiente estructura:
   "pages": [
     {
       "id": "page-1",
-      "title": "Título de la página en español",
-      "description": "Descripción breve en español de lo que cubre esta página",
+      "title": "Page title in Spanish",
+      "description": "Brief description in Spanish of what this page covers",
       "importance": "high|medium|low",
-      "relevant_files": ["ruta/exacta/del/archivo.ts"],
+      "relevant_files": ["exact/path/to/file.ts"],
       "related_pages": ["page-2"],
       "parent_section": "section-1"
     }
   ]
 }
 
-INSTRUCCIONES DE FORMATO:
-- Devuelve ÚNICAMENTE el objeto JSON especificado arriba
-- NO envuelvas el JSON en bloques de código markdown (sin ``` ni ```json)
-- NO incluyas texto explicativo antes ni después del JSON
-- Asegúrate de que el JSON esté correctamente formateado y sea válido
-- Empieza directamente con { y termina con }
+FORMATTING INSTRUCTIONS:
+- Return ONLY the JSON object specified above
+- Do NOT wrap the JSON in markdown code blocks (no ``` or ```json)
+- Do NOT include any explanatory text before or after the JSON
+- Ensure the JSON is correctly formatted and valid
+- Start directly with { and end with }
 
-REGLAS CRÍTICAS:
-1. Crea 8-12 páginas que formen una wiki completa para este repositorio
-2. Cada página debe enfocarse en un aspecto específico del código
-3. CRÍTICO — reglas para relevant_files:
-   - USA ÚNICAMENTE rutas que aparezcan EXACTAMENTE en el árbol de archivos proporcionado arriba
-   - Copia la ruta exacta tal como aparece, carácter por carácter
-   - NO adivines, inventes ni extrapoles ninguna ruta de archivo
-   - Si ningún archivo del árbol es directamente relevante para una página, usa un array vacío []
-   - Los archivos binarios o de imagen (png, jpg, ico, ttf, webp) NO son relevantes — exclúyelos
-4. Devuelve ÚNICAMENTE JSON válido, sin delimitadores markdown
+CRITICAL RULES:
+1. Create 8-12 pages that form a complete wiki for this repository
+2. Each page must focus on a specific aspect of the code
+3. CRITICAL — rules for relevant_files:
+   - USE ONLY paths that appear EXACTLY in the file tree provided above
+   - Copy the exact path as it appears, character by character
+   - Do NOT guess, invent, or extrapolate any file paths
+   - If no file in the tree is directly relevant to a page, use an empty array []
+   - Binary or image files (png, jpg, ico, ttf, webp) are NOT relevant — exclude them
+4. Return ONLY valid JSON, with no markdown delimiters

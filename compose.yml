@@ -81,6 +81,23 @@ services:
       retries: 5
       start_period: 10s
 
+  code-lens-qdrant:
+    image: qdrant/qdrant:latest
+    restart: always
+    container_name: code-lens-qdrant
+    ports:
+      - 6333:6333
+      - 6334:6334
+    expose:
+      - 6333
+      - 6334
+      - 6335
+    volumes:
+      - ./config/qdrant.yaml:/qdrant/config/production.yaml:ro
+      - qdrant_data:/qdrant/storage
+    networks:
+      - code-lens-network
+
 networks:
   code-lens-network:
     driver: bridge

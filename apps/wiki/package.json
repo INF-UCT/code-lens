@@ -38,6 +38,7 @@
 		"hono": "^4.11.9",
 		"langchain": "^1.2.18",
 		"openai": "^6.18.0",
+		"tiktoken": "^1.0.22",
 		"zod": "^3.24.0"
 	},
 	"devDependencies": {
