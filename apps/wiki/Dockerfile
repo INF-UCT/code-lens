@@ -14,7 +14,7 @@ COPY apps/wiki/package*.json ./apps/wiki/
 
 FROM base AS dev
 
-RUN apk add --no-cache tree
+RUN apk add --no-cache tree openssh-client bash && rm -rf /var/cache/apk/*
 
 RUN cd apps/wiki && npm ci && npm i
 

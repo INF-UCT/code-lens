@@ -25,7 +25,6 @@ RUN wget https://github.com/watchexec/cargo-watch/releases/download/v8.5.3/cargo
 	rm -rf cargo-watch-v8.5.3-x86_64-unknown-linux-musl.tar.xz cargo-watch-v8.5.3-x86_64-unknown-linux-musl
 
 WORKDIR /app
-ENV CARGO_TARGET_DIR /app/target
 
 CMD ["/bin/bash", "/app/apps/server/config/entrypoint.sh"]
 
@@ -45,7 +44,6 @@ RUN apk add --no-cache \
 WORKDIR /app
 COPY . .
 
-ENV CARGO_TARGET_DIR /app/target
 RUN cargo build -p server --bin server --release
 
 # ==============================================================================

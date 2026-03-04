@@ -19,9 +19,9 @@ services:
     networks:
       - code-lens-network
     volumes:
+      - ./data:/app/repos
       - ./apps/server:/app/apps/server
       - server_target:/app/target
-      - ./data:/app/repos
 
   code-lens-wiki:
     container_name: code-lens-wiki
@@ -38,6 +38,9 @@ services:
       - ./apps/wiki:/app/apps/wiki:cached
       - ./data:/app/repos
       - /app/apps/wiki/node_modules
+      - ~/.ssh/id_ed25519:/home/node/.ssh/id_ed25519:ro
+      - ~/.ssh/id_ed25519.pub:/home/node/.ssh/id_ed25519.pub:ro
+      - ~/.ssh/known_hosts:/home/node/.ssh/known_hosts:rw
     environment:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
@@ -106,3 +109,4 @@ volumes:
   postgres_data:
   server_target:
   cargo_cache:
+  qdrant_data:

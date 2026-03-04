@@ -52,3 +52,10 @@ gen-token:
 	curl -s -X POST http://localhost/api/tokens/generate \
 	-H "Content-Type: application/json" \
 	-d '{"user_id": "$(USER_ID)", "repository_url": "$(REPO_URL)"}' | jq
+
+ssh-ai:
+	docker exec -it code-lens-wiki \
+	ssh -o StrictHostKeyChecking=no \
+	-o UserKnownHostsFile=/dev/null \
+	-i /home/node/.ssh/id_ed25519 \
+	lrevillod@172.24.250.47

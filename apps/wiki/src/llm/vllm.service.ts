@@ -5,19 +5,19 @@ import { OpenAI } from "openai"
 
 class VLLMService {
 	public availableModels: Record<string, string> = {
-		QWEN_3_4B: "Qwen/Qwen3-4B",
-		DEEPSEEK: "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+		QWEN_3_5_9B: "qwen3.5:9b",
+		NOMIC_EMBED_TEXT_V2: "nomic-embed-text-v2-moe:latest",
 	}
 
 	public getBaseURL(): string {
-		return env.VLLM_URL
+		return env.OLLAMA_URL
 	}
 
 	public async checkConnection(): Promise<void> {
-		logger.info(`Connecting to vLLM at ${env.VLLM_URL}...`)
+		logger.info(`Connecting to Ollama at ${env.OLLAMA_URL}...`)
 
 		const client = new OpenAI({
-			baseURL: env.VLLM_URL,
+			baseURL: env.OLLAMA_URL,
 			apiKey: "",
 			timeout: 5000,
 		})
@@ -27,14 +27,14 @@ class VLLMService {
 		try {
 			response = await client.models.list()
 		} catch (error) {
-			logger.error(`Failed to connect to vLLM: ${error}`)
+			logger.error(`Failed to connect to Ollama: ${error}`)
 			process.exit(1)
 		}
 
 		const models = response.data.map(m => m.id)
 
-		logger.info(`Successfully connected to vLLM!`)
-		logger.info(`Available models from vLLM: ${models.join(", ")}`)
+		logger.info(`Successfully connected to Ollama!`)
+		logger.info(`Available models from Ollama: ${models.join(", ")}`)
 	}
 }
 

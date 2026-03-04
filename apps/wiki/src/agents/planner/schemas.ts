@@ -7,7 +7,7 @@ const WikiPageSchema = z.object({
 	importance: z.enum(["high", "medium", "low"]),
 	relevant_files: z.array(z.string()),
 	related_pages: z.array(z.string()),
-	parent_section: z.string().optional(),
+	parent_section: z.string().optional().nullable(),
 })
 
 const WikiSectionSchema = z.object({

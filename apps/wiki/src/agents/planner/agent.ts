@@ -18,11 +18,11 @@ export class PlannerAgent extends Agent<WikiStructure> {
 
 	public async run(): Promise<WikiStructure> {
 		const analysis = await this.analyzeProject()
-		return await this.formatOutput(analysis)
+		return analysis
 	}
 
-	private async analyzeProject(): Promise<string> {
-		const agent = createAgent({ model: this.llm })
+	private async analyzeProject(): Promise<WikiStructure> {
+		const agent = this.llm.withStructuredOutput(WikiStructureSchema)
 		const readmeContent = await fs
 			.readFile(`${this.projectPath}/README.md`, "utf-8")
 			.catch(e => {
@@ -34,21 +34,17 @@ export class PlannerAgent extends Agent<WikiStructure> {
 			readme: readmeContent as string,
 		})
 
-		const [messages, config] = new AgentInvokeBuilder()
-			.withPrompt(prompt)
-			.withRecursionLimit(100)
-			.build()
-
 		const result = await agent
-			.invoke(messages, config)
-			.then(result => {
-				const lastMessage = (result.messages.at(-1)?.content ?? "").toString()
-				logger.info(`[PlannerAgent] Agent response: ${lastMessage}`)
-				return lastMessage
+			.invoke(prompt, { recursionLimit: 100 })
+			.then(response => {
+				logger.info(
+					`[PlannerAgent] Analyzed project structure: ${JSON.stringify(response, null, 2)}`
+				)
+				return response
 			})
 			.catch(error => {
-				logger.error(`[PlannerAgent] Agent error: ${error}`)
-				throw error
+				logger.error(`[PlannerAgent] Error analyzing project: ${error}`)
+				throw Error("Failed to analyze project structure")
 			})
 
 		return result
