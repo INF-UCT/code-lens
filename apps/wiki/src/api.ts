@@ -1,11 +1,38 @@
+import z from "zod"
+import env from "@/utils/env"
 import logger from "@/utils/logger"
 
+import type { Context, Next } from "hono"
+
+import { rag } from "@/rag"
 import { Hono } from "hono"
-import { apiKeyAuth } from "@/api/middleware"
 import { PlannerAgent } from "@/agents/planner/agent"
-import { DocGenerationDto, DocGenerationInput } from "@/api/schemas"
 
 const app = new Hono()
+
+const DocGenerationDto = z.object({
+	repoId: z.string().uuid(),
+	repoPath: z.string().nonempty(),
+	repoTree: z.string().nonempty(),
+})
+
+type DocGenerationInput = z.infer<typeof DocGenerationDto>
+
+export const apiKeyAuth = async (c: Context, next: Next) => {
+	const authHeader = c.req.header("Authorization")
+
+	if (!authHeader) {
+		return c.json({ error: "Missing Authorization header" }, 401)
+	}
+
+	const token = authHeader.replace("Bearer ", "")
+
+	if (token !== env.WIKI_SERVICE_API_KEY) {
+		return c.json({ error: "Invalid API key" }, 401)
+	}
+
+	await next()
+}
 
 app.post("/docs-gen", apiKeyAuth, async c => {
 	const body = await c.req.json<DocGenerationInput>()
@@ -22,14 +49,11 @@ app.post("/docs-gen", apiKeyAuth, async c => {
 		return undefined
 	})
 
-	if (!plannerOutput) {
-		return c.json(
-			{ error: "Failed to generate documentation sections", repo_id: body.repoId },
-			500
-		)
-	}
+	if (!plannerOutput) return c.status(500)
 
 	logger.info(`[API] Planner output: ${JSON.stringify(plannerOutput, null, 2)}`)
+
+	await rag.newIndexation(body.repoPath)
 
 	return c.json({
 		repo_id: body.repoId,

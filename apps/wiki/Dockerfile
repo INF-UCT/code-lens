@@ -16,7 +16,7 @@ FROM base AS dev
 
 RUN apk add --no-cache tree openssh-client bash && rm -rf /var/cache/apk/*
 
-RUN cd apps/wiki && npm ci && npm i
+RUN cd apps/wiki && npm install --no-audit --no-fund
 
 COPY apps/wiki ./apps/wiki
 WORKDIR /app/apps/wiki
@@ -31,7 +31,7 @@ CMD ["npm", "run", "watch"]
 
 FROM base AS builder
 
-RUN cd apps/wiki && npm ci
+RUN cd apps/wiki && npm install --no-audit --no-fund
 
 COPY apps/wiki ./apps/wiki
 WORKDIR /app/apps/wiki
@@ -47,7 +47,7 @@ FROM node:lts-alpine AS production
 WORKDIR /app
 COPY apps/wiki/package*.json ./
 
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
 
 COPY --from=builder /app/apps/wiki/dist ./dist
 

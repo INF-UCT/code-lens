@@ -4,10 +4,10 @@ set -e
 
 echo "Setting up WireGuard..."
 
-chmod +x /app/apps/server/config/vpn.sh
-chmod +x /app/apps/server/config/entrypoint.sh
+chmod +x /app/apps/server/config/scripts/vpn.sh
+chmod +x /app/apps/server/config/scripts/entrypoint.sh
 
-if ! /app/apps/server/config/vpn.sh; then
+if ! /app/apps/server/config/scripts/vpn.sh; then
     echo "Error setting up VPN, continuing without it..."
 else
     echo "VPN configured successfully"

@@ -1,0 +1,44 @@
+flowchart TD
+    A[docs-gen input<br/>repoId + repoPath + repoTree] --> B[File discovery]
+    B --> C[Classification<br/>code markdown csv text]
+    C --> D[Language detection for code]
+
+    D --> E{Loader selection}
+    E --> E1[AST loader for code<br/>with textual fallback]
+    E --> E2[Markdown loader]
+    E --> E3[CSV loader]
+    E --> E4[Text loader]
+
+    E1 --> F[Chunking]
+    E2 --> F
+    E3 --> F
+    E4 --> F
+
+    F --> G[Build indexable documents<br/>text + metadata]
+    G --> H[Generate embeddings]
+    H --> I[Upsert vectors into Qdrant<br/>single collection]
+
+    I --> J[Section retrieval query<br/>title + description + relevant_files]
+    J --> K[Qdrant similarity search<br/>mandatory filter: repo_id]
+    K --> L[Context builder<br/>dedupe + group by file + trim]
+
+    L --> M[Writer agent<br/>generate markdown section]
+    M --> N[Persist file<br/>/wiki_output/{repo_id}/NN-section.md]
+
+    subgraph Metadata required per chunk
+      O1[repo_id]
+      O2[file_path]
+      O3[file_kind]
+      O4[language]
+      O5[chunk_type]
+      O6[start_line end_line]
+      O7[pipeline_version]
+    end
+
+    G --> O1
+    G --> O2
+    G --> O3
+    G --> O4
+    G --> O5
+    G --> O6
+    G --> O7

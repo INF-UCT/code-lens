@@ -1,11 +1,10 @@
 import { ChatOpenAI } from "@langchain/openai"
 import { HumanMessage } from "langchain"
+import { PromiseResult } from "@/utils/result"
 
 export abstract class Agent<T> {
-	constructor(protected llm: ChatOpenAI) {}
-
-	public abstract run(): Promise<T>
-	protected abstract formatOutput(rawOutput: string): Promise<T>
+	constructor(protected readonly llm: ChatOpenAI) {}
+	public abstract run(): PromiseResult<T>
 }
 
 export class AgentInvokeBuilder {

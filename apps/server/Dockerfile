@@ -26,7 +26,7 @@ RUN wget https://github.com/watchexec/cargo-watch/releases/download/v8.5.3/cargo
 
 WORKDIR /app
 
-CMD ["/bin/bash", "/app/apps/server/config/entrypoint.sh"]
+CMD ["/bin/bash", "/app/apps/server/config/scripts/entrypoint.sh"]
 
 # ==============================================================================
 # Build Stage

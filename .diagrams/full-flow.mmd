@@ -1,0 +1,38 @@
+flowchart TD
+    A[Git Push] --> B[GitHub Action<br/>doc-generator]
+    B --> C[POST /api/repositories<br/>Authorization: Bearer repo token]
+
+    C --> D[Nginx /api proxy]
+    D --> E[Rust Server<br/>apps/server]
+
+    E --> E1[Validate repository token]
+    E1 --> E2[Upsert repository metadata in Postgres]
+    E2 --> E3[Clone repository at exact commit SHA]
+    E3 --> E4[Preprocess repository<br/>ignore patterns + max size]
+    E4 --> E5[Generate repository tree]
+
+    E5 --> F1[Send start email]
+    E5 --> F2[POST /docs-gen to Wiki service]
+
+    F2 --> G[Wiki API<br/>apps/wiki]
+    G --> G1[Validate API key + payload]
+    G1 --> G2[Run PlannerAgent<br/>wiki structure]
+    G2 --> G3[Index repository chunks in Qdrant]
+    G3 --> G4[For each section:<br/>retrieve context + run writer]
+    G4 --> G5[Write markdown files:<br/>/wiki_output/{repo_id}/NN-section.md]
+
+    G5 --> H[Return docs generation result]
+
+    subgraph Infra
+      I1[(Postgres)]
+      I2[(Qdrant)]
+      I3[Local LLM / Ollama-vLLM]
+      I4[(Shared Volume<br/>wiki_output)]
+    end
+
+    E2 --> I1
+    G3 --> I2
+    G4 --> I2
+    G2 --> I3
+    G4 --> I3
+    G5 --> I4
