@@ -1,3 +1,6 @@
+// @ts-expect-error - package has no types
+import ProtocolBuffers from "tree-sitter-proto"
+
 import Parser from "tree-sitter"
 import JavaScript from "tree-sitter-javascript"
 import TypeScript from "tree-sitter-typescript"
@@ -7,6 +10,8 @@ import Java from "tree-sitter-java"
 import C from "tree-sitter-c"
 import CPP from "tree-sitter-cpp"
 import Rust from "tree-sitter-rust"
+
+import { SupportedTextSplitterLanguage } from "@langchain/textsplitters"
 
 export type Language =
 	| "JavaScript"
@@ -19,6 +24,7 @@ export type Language =
 	| "C"
 	| "C++"
 	| "Rust"
+	| "Protocol-Buffers"
 
 export const programmingExtensions = new Map<string, Language>([
 	["js", "JavaScript"],
@@ -33,9 +39,27 @@ export const programmingExtensions = new Map<string, Language>([
 	["cpp", "C++"],
 	["hpp", "C++"],
 	["rs", "Rust"],
+	["proto", "Protocol-Buffers"],
 ])
 
-type TSLanguage = Parser.Language
+export const languageToTextExplitterLanguage: Record<
+	Language,
+	SupportedTextSplitterLanguage
+> = {
+	"JavaScript": "js",
+	"TypeScript": "js",
+	"TypeScript-React": "js",
+	"JavaScript-React": "js",
+	"Python": "python",
+	"Go": "go",
+	"Java": "java",
+	"C": "cpp",
+	"C++": "cpp",
+	"Rust": "rust",
+	"Protocol-Buffers": "proto",
+}
+
+type TSLanguage = Parameters<Parser["setLanguage"]>[0]
 
 export const AST_LANGUAGES: Record<Language, TSLanguage> = {
 	"JavaScript": JavaScript as TSLanguage,
@@ -48,4 +72,5 @@ export const AST_LANGUAGES: Record<Language, TSLanguage> = {
 	"C": C as TSLanguage,
 	"C++": CPP as TSLanguage,
 	"Rust": Rust as TSLanguage,
+	"Protocol-Buffers": ProtocolBuffers as TSLanguage,
 }

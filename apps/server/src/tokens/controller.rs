@@ -1,4 +1,4 @@
-use crate::tokens::{GenerateTokenDto, TokensRepository, TokensService, UserClaims, UserTokenCheck};
+use crate::tokens::*;
 use std::sync::Arc;
 use sword::prelude::*;
 use uuid::Uuid;
@@ -13,21 +13,32 @@ pub struct TokensController {
 impl TokensController {
     #[get("/{user_id}")]
     pub async fn list_tokens(&self, req: Request) -> HttpResult<JsonResponse> {
-        let claims = req.extensions.get::<UserClaims>().unwrap();
+        let claims = req
+            .extensions
+            .get::<UserClaims>()
+            .ok_or_else(|| JsonResponse::Unauthorized())?;
+
         let requested_user_id = req.param::<Uuid>("user_id")?;
 
         if claims.user_id != requested_user_id {
             return Err(JsonResponse::Forbidden());
         }
 
-        let tokens = self.tokens_repository.find_by_user_id(&requested_user_id).await?;
+        let tokens = self
+            .tokens_repository
+            .find_by_user_id(&requested_user_id)
+            .await?;
 
         Ok(JsonResponse::Ok().data(tokens))
     }
 
     #[post("/generate")]
     pub async fn generate_token(&self, req: Request) -> HttpResult<JsonResponse> {
-        let claims = req.extensions.get::<UserClaims>().unwrap();
+        let claims = req
+            .extensions
+            .get::<UserClaims>()
+            .ok_or_else(|| JsonResponse::Unauthorized())?;
+
         let dto = req.body_validator::<GenerateTokenDto>()?;
 
         if claims.user_id != dto.user_id {
@@ -43,7 +54,10 @@ impl TokensController {
 
     #[post("/logout")]
     pub async fn logout(&self, req: Request) -> HttpResult<JsonResponse> {
-        let auth_header = req.authorization().unwrap();
+        let auth_header = req
+            .authorization()
+            .ok_or_else(|| JsonResponse::Unauthorized())?;
+
         let token = auth_header.strip_prefix("Bearer ").unwrap();
 
         self.tokens_service.revoke_token(&token.to_string()).await?;

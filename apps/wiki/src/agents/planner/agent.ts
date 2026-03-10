@@ -29,7 +29,7 @@ export class PlannerAgent extends Agent<WikiStructure> {
 			return Err(`[PlannerAgent] Failed to read README.md: ${error}`)
 		}
 
-		const prompt = prompts.get("planner/system", {
+		const prompt = prompts.get("planner/planner", {
 			fileTree: this.projectTree,
 			readme: readme!,
 		})

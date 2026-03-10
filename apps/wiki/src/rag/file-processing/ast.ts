@@ -1,11 +1,11 @@
-import { Document } from "@/rag/loaders/documents"
-import { AST_LANGUAGES, Language } from "@/rag/languages"
-import { BaseDocumentLoader } from "@langchain/core/document_loaders/base"
-
 import fs from "node:fs/promises"
 import Parser from "tree-sitter"
-import { Err, Ok, PromiseResult, safeAsyncTry } from "@/utils/result"
 import logger from "@/utils/logger"
+
+import { Document } from "@/rag/file-processing/documents"
+import { BaseDocumentLoader } from "@langchain/core/document_loaders/base"
+import { AST_LANGUAGES, Language } from "@/rag/file-processing/languages"
+import { Err, Ok, PromiseResult, safeAsyncTry } from "@/utils/result"
 
 export class ASTLoader extends BaseDocumentLoader {
 	constructor(
@@ -38,6 +38,10 @@ export class ASTLoader extends BaseDocumentLoader {
 
 		logger.info(
 			`[AST Loader] - Successfully parsed ${this.filePath} with language ${this.language}`
+		)
+
+		logger.debug(
+			`[AST Loader] - Root node type: ${rootNode.type}, child count: ${rootNode.childCount}`
 		)
 
 		return []

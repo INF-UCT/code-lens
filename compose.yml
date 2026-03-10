@@ -1,5 +1,5 @@
 services:
-  code-lens-server:
+  server:
     container_name: code-lens-server
     build:
       context: .
@@ -12,7 +12,7 @@ services:
       - SYS_MODULE
     privileged: false
     depends_on:
-      code-lens-postgres:
+      postgres:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 8000 || exit 1"]
@@ -29,21 +29,28 @@ services:
       - ./apps/server:/app/apps/server
       - server_target:/app/target
 
-  code-lens-wiki:
+  wiki:
     container_name: code-lens-wiki
+    restart: unless-stopped
     build:
       context: .
       dockerfile: ./apps/wiki/Dockerfile
       target: dev
     env_file:
       - .env
-    network_mode: "service:code-lens-server"
+    network_mode: "service:server"
     depends_on:
-      - code-lens-server
+      server:
+        condition: service_started
+      qdrant:
+        condition: service_started
     volumes:
-      - ./apps/wiki:/app/apps/wiki:cached
+      - ./apps/wiki/src:/app/apps/wiki/src:cached
+      - ./apps/wiki/config:/app/apps/wiki/config:cached
+      - ./apps/wiki/package.json:/app/apps/wiki/package.json:cached
+      - ./apps/wiki/tsconfig.json:/app/apps/wiki/tsconfig.json:cached
+      - ./apps/wiki/eslint.config.js:/app/apps/wiki/eslint.config.js:cached
       - ./data:/app/repos
-      - /app/apps/wiki/node_modules
       - ~/.ssh/id_ed25519:/home/node/.ssh/id_ed25519:ro
       - ~/.ssh/id_ed25519.pub:/home/node/.ssh/id_ed25519.pub:ro
       - ~/.ssh/known_hosts:/home/node/.ssh/known_hosts:rw
@@ -51,7 +58,7 @@ services:
       - NODE_ENV=development
       - CHOKIDAR_USEPOLLING=true
 
-  code-lens-nginx:
+  nginx:
     container_name: code-lens-nginx
     image: nginx:alpine
     ports:
@@ -59,12 +66,12 @@ services:
     volumes:
       - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      code-lens-server:
+      server:
         condition: service_healthy
     networks:
       - code-lens-network
 
-  code-lens-postgres:
+  postgres:
     image: postgres:15
     container_name: code-lens-postgres
     command: postgres -c log_min_messages=ERROR -c log_statement=none -c log_duration=off -c log_min_duration_statement=-1 -c log_checkpoints=off
@@ -91,7 +98,7 @@ services:
       retries: 5
       start_period: 10s
 
-  code-lens-qdrant:
+  qdrant:
     image: qdrant/qdrant:latest
     restart: always
     container_name: code-lens-qdrant

@@ -6,6 +6,7 @@ const schema = z.object({
 		.string()
 		.nonempty("WIKI_SERVICE_API_KEY env var is required"),
 	QDRANT_URL: z.string().nonempty("QDRANT_URL env var is required"),
+	WIKI_OUTPUT_DIR: z.string().default("/app/repos/wiki_output"),
 	LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 })
 

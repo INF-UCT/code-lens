@@ -67,22 +67,8 @@ See the [Makefile](Makefile) for all available commands.
 
 ## TypeScript Code Style
 
-### Formatting (Prettier — root `.prettierrc.json`)
-
-- **Indentation**: tabs (not spaces)
-- **Semicolons**: none
-- **Quotes**: double (`"`)
-- **Trailing commas**: ES5 (objects, arrays, function params)
-- **Arrow function parens**: omitted for single argument — `x => x`, not `(x) => x`
-- **Print width**: 85 characters
-- **Line endings**: LF
-
-### TypeScript Configuration
-
-- `strict: true` — full strict mode, no exceptions
-- `target: ES2022`, `module: ESNext`, `moduleResolution: node`
-- `isolatedModules: true` — no `const enum`, no namespace merging
-- `@/` path alias maps to `src/` — always use it; never use `../../` relative traversal
+See the [prettier configuration](.prettierrc.json) for formatting rules. 
+See the `tsconfig.json` files in each Node.js app for TypeScript rules.
 
 ### Naming Conventions
 
@@ -104,18 +90,3 @@ See the [Makefile](Makefile) for all available commands.
   are preferred for consistent API surface.
 
 ---
-
-## Rust Code Style
-
-### Domain Module Structure
-
-Every domain (`auth`, `users`, `tokens`, `repositories`) follows this exact layout:
-
-```
-domain/
-  mod.rs          module boundary + DI registration (Module trait)
-  controller.rs   HTTP handlers (#[controller], #[get], #[post])
-  dtos.rs         request/response structs (Serialize, Deserialize, Validate, FromRow)
-  repository.rs   SQLx database queries (#[injectable])
-  service.rs      business logic (#[injectable])
-```

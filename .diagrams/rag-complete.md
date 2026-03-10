@@ -9,10 +9,11 @@ The project should be delivered in two layers:
 1. MVP (required): produce consistent, repository-specific markdown documentation.
 2. Phase 2+ (optional): improve retrieval quality and add diagram-oriented capabilities.
 
-Important decision:
+Important decisions:
 
 - Call/dependency graphs and automatic diagrams are not required for MVP documentation quality.
 - Good documentation is achievable with semantic chunks + embeddings + retrieval + writer.
+- Tree-sitter AST analysis **is used in the MVP only to improve semantic chunking**, not to build graphs or perform deep static analysis.
 
 ## Target architecture
 
@@ -21,7 +22,7 @@ repo (already preprocessed by server)
   -> file discovery
   -> classification + language detection
   -> loader
-  -> chunking
+  -> AST-aware chunking
   -> embeddings
   -> Qdrant upsert (single collection)
   -> retrieval by section (repo_id filter)
@@ -74,15 +75,28 @@ Minimum language detection for code:
 
 MVP chunking policy:
 
-- code: text chunking with safe size + overlap (AST symbols optional in MVP)
+- code: **AST-aware semantic chunking using Tree-sitter when available**
+- code fallback: text chunking with safe size + overlap
 - markdown: split by headers when possible
 - csv: row-group chunks
-- text/config: fixed-size chunks with overlap
+- text: fixed-size chunks with overlap
 
 AST policy in MVP:
 
-- keep AST parsing as a non-blocking enhancement
-- if AST extraction fails or is incomplete, fallback to textual chunking
+- Tree-sitter is used **only to detect semantic boundaries in code**
+- extract chunks based on high-level nodes when possible (e.g. class, function, method)
+- no dependency graph or call graph extraction in MVP
+- if AST parsing fails or produces no usable nodes, fallback to textual chunking
+
+Typical AST chunk targets (examples):
+
+- classes
+- functions
+- methods
+- structs
+- interfaces
+
+Oversized AST nodes should be subdivided with text chunking.
 
 ### 4) Document metadata
 
@@ -98,6 +112,16 @@ Each chunk must include at least:
   "start_line": 10,
   "end_line": 42,
   "pipeline_version": "v1"
+}
+```
+
+Recommended optional metadata:
+
+```json
+{
+  "chunk_index": 3,
+  "total_chunks": 12,
+  "file_hash": "sha256"
 }
 ```
 
@@ -134,6 +158,12 @@ Quality rules:
 - trim context to model limits
 - fallback to direct read of `relevant_files` if retrieval is empty
 
+Recommended retrieval parameters:
+
+```
+top_k ≈ 20
+```
+
 ### 7) Writer and output files
 
 Writer input should include:
@@ -152,6 +182,16 @@ Output rules:
 - stable 2-digit order prefix (`01`, `02`, ...)
 - UTF-8 markdown
 
+Example output structure:
+
+```
+/wiki_output/{repo_id}/
+  01-overview.md
+  02-architecture.md
+  03-components.md
+  04-api.md
+```
+
 ### 8) Endpoint output
 
 Recommended response:
@@ -169,7 +209,7 @@ Recommended response:
 
 ## Phase 2 improvements (after MVP)
 
-1. AST semantic chunking by symbol (`class`, `function`, `method`).
+1. Improved AST semantic chunking with better symbol coverage.
 2. Better ranking using `relevant_files` weighting.
 3. Token budget optimization and chunk compression.
 4. Controlled parallel section generation.
@@ -183,9 +223,16 @@ These are explicitly optional for documentation MVP:
 2. dependency graph extraction
 3. automatic Mermaid/UML generation
 
+These features are primarily useful for:
+
+- architecture diagrams
+- dependency visualization
+- code navigation tools
+
 ## Definition of done (MVP)
 
 - A `/docs-gen` request generates real markdown files.
 - Retrieval uses Qdrant with strict `repo_id` isolation.
 - Output is repository-specific and grounded in retrieved context.
 - Logs are traceable by `repo_id` across planner, indexation, retrieval, and writer.
+- Code files benefit from AST-aware semantic chunking when parsers are available.

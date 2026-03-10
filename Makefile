@@ -5,9 +5,12 @@ endif
 
 CLI=apps/cli
 SERVER=apps/server
+app ?= wiki
+pkg ?=
+service ?= $(app)
 
 .DEFAULT_GOAL := run
-.PHONY: cli run detach clean fmt lint migration machete nursery db-clean seed db gen-token
+.PHONY: cli run detach clean fmt lint migration machete nursery db-clean seed db gen-token npmi npmu
 
 cli:
 	cd $(CLI) && npm start || true
@@ -47,6 +50,15 @@ machete:
 
 nursery:
 	cargo clippy --all-features -- -D warnings -W clippy::pedantic -W clippy::nursery
+
+npmi:
+	cd apps/$(app) && npm install $(pkg)
+	docker compose exec $(service) /bin/sh -c "cd /app/apps/$(app) && npm install $(pkg)"
+
+npmu:
+	cd apps/$(app) && npm uninstall $(pkg)
+	docker compose exec $(service) /bin/sh -c "cd /app/apps/$(app) && npm uninstall $(pkg)"
+
 
 gen-token:
 	curl -s -X POST http://localhost/api/tokens/generate \

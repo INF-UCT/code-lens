@@ -7,6 +7,7 @@ import type { Context, Next } from "hono"
 import { rag } from "@/rag"
 import { Hono } from "hono"
 import { PlannerAgent } from "@/agents/planner/agent"
+import { DocumentationGenerator } from "@/docs/generator"
 
 const app = new Hono()
 
@@ -40,9 +41,11 @@ app.post("/docs-gen", apiKeyAuth, async c => {
 
 	logger.info(`Repository ID: ${body.repoId}`)
 	logger.info(`Repository Path: ${body.repoPath}`)
-	logger.info(`Repository Tree\n: ${body.repoTree}`)
+	logger.info(`Repository Tree entries: ${body.repoTree.split("\n").length}`)
 
 	const plannerAgent = new PlannerAgent(body.repoPath, body.repoTree)
+
+	logger.info(`[API] Running PlannerAgent for repo ${body.repoId}...`)
 
 	const plannerOutput = await plannerAgent.run().catch(error => {
 		logger.error(`Error running PlannerAgent: ${error}`)
@@ -50,14 +53,43 @@ app.post("/docs-gen", apiKeyAuth, async c => {
 	})
 
 	if (!plannerOutput) return c.status(500)
+	if (plannerOutput.error) {
+		logger.error(
+			`[API] Planner failed for repo ${body.repoId}: ${plannerOutput.error}`
+		)
+		return c.json({ error: plannerOutput.error }, 500)
+	}
 
-	logger.info(`[API] Planner output: ${JSON.stringify(plannerOutput, null, 2)}`)
+	logger.info(
+		`[API] Planner summary: sections=${plannerOutput.value!.sections.length}, pages=${plannerOutput.value!.pages.length}`
+	)
 
-	await rag.newIndexation(body.repoPath)
+	logger.info(`[API] Reindexing repository ${body.repoId} in Qdrant...`)
+	await rag.newIndexation(body.repoId, body.repoPath)
+
+	logger.info(`[API] Generating markdown documentation for repo ${body.repoId}...`)
+	const docsGenerator = new DocumentationGenerator()
+	const generationResult = await docsGenerator.generate({
+		repoId: body.repoId,
+		plannerOutput: plannerOutput.value!,
+	})
+
+	const hasErrors = generationResult.errors.length > 0
+
+	if (hasErrors) {
+		logger.warn(
+			`[API] Documentation generated with partial errors for repo ${body.repoId}: ${generationResult.errors.length} pages failed`
+		)
+	}
 
 	return c.json({
 		repo_id: body.repoId,
-		message: "Documentation generated successfully",
+		message: hasErrors
+			? "Documentation generated with partial failures"
+			: "Documentation generated successfully",
+		generated_pages: generationResult.generatedPages,
+		output_path: generationResult.outputDir,
+		errors: generationResult.errors,
 	})
 })
 

@@ -1,9 +1,0 @@
-/no_think
-
-You are extracting structured data from a section proposal analysis. Your only job is to parse the analysis below and return a JSON object.
-
-Return ONLY valid JSON. No extra text, no explanation, no markdown fences.
-
-[ANALYSIS]
-{{input}}
-[/ANALYSIS]

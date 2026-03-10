@@ -6,6 +6,9 @@ FROM node:lts-alpine AS base
 
 WORKDIR /app
 
+RUN apk add --no-cache python3 make g++ git
+ENV PYTHON=/usr/bin/python3
+
 COPY apps/wiki/package*.json ./apps/wiki/
 
 # ==============================================================================
@@ -14,7 +17,7 @@ COPY apps/wiki/package*.json ./apps/wiki/
 
 FROM base AS dev
 
-RUN apk add --no-cache tree openssh-client bash && rm -rf /var/cache/apk/*
+RUN apk add --no-cache openssh-client bash && rm -rf /var/cache/apk/*
 
 RUN cd apps/wiki && npm install --no-audit --no-fund
 
@@ -47,7 +50,10 @@ FROM node:lts-alpine AS production
 WORKDIR /app
 COPY apps/wiki/package*.json ./
 
-RUN npm install --omit=dev --no-audit --no-fund && npm cache clean --force
+RUN apk add --no-cache --virtual .build-deps python3 make g++ git && \
+	npm install --omit=dev --no-audit --no-fund && \
+	npm cache clean --force && \
+	apk del .build-deps
 
 COPY --from=builder /app/apps/wiki/dist ./dist
 
