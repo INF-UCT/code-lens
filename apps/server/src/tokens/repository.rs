@@ -56,12 +56,11 @@ impl TokensRepository {
     }
 
     pub async fn is_token_revoked(&self, token_hash: &str) -> AppResult<bool> {
-        let result = sqlx::query_as::<_, RevokedToken>(
-            "SELECT * FROM revoked_tokens WHERE token_hash = $1",
-        )
-        .bind(token_hash)
-        .fetch_optional(self.database.get_pool())
-        .await?;
+        let result =
+            sqlx::query_as::<_, RevokedToken>("SELECT * FROM revoked_tokens WHERE token_hash = $1")
+                .bind(token_hash)
+                .fetch_optional(self.database.get_pool())
+                .await?;
 
         Ok(result.is_some())
     }
